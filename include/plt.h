@@ -22,54 +22,20 @@
 /*-             http://socware.net                                            */
 /*-                                                                           */
 /*-****************************************************************************/
-#include <hcos/task.h>
-#include <hcos/soc.h>
+#ifndef PLT0419
+#define PLT0419
 
-#include <string.h>
-#include <stdio.h>
+#include "lwip/netif.h"
 
-#include "term.h"
+/// @return system clock
+unsigned freq_init(void);
 
-#if _EXE_
+void plt_init(void);
 
-static volatile float g = 3.14;
+typedef void (*net_ipchange_t) (const struct netif * netif);
 
-static void fast(void *priv)
-{
-	unsigned ts = (unsigned)priv;
-	g = g + g;
-	task_sleep(10);
-	irq_sgi(12);
-	task_sleep(10);
-	while (1) {
-		_printf("fast %d\r\n", ts);
-		task_sleep(ts);
-	}
-}
+void net_init(net_ipchange_t cb);
 
-static void slow(void *priv)
-{
-	unsigned ts = (unsigned)priv;
-	while (1) {
-		_printf("slow %d\r\n", ts);
-		task_sleep(ts);
-	}
-}
-
-irq_handler(isr_use_float)
-{
-	g += 10.2;
-	return IRQ_DONE;
-}
-
-int main(void)
-{
-	core_init();
-	irq_init(12, isr_use_float);
-	task_new("fast", fast, 56, 1024, -1, (void *)30);
-	task_new("slow", slow, 56, 1024, -1, (void *)50);
-	core_start();
-	return 0;
-}
+void dhcp_init(void);
 
 #endif

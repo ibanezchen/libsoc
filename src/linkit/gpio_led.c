@@ -22,33 +22,32 @@
 /*-             http://socware.net                                            */
 /*-                                                                           */
 /*-****************************************************************************/
+
+#if _EXE_
+
 #include <hcos/task.h>
 #include <hcos/soc.h>
-
 #include <string.h>
 #include <stdio.h>
-
-#if HAL
 #include "hal_gpio.h"
+#include "term.h"
 
-void gpio_led(void *priv)
+static void gpio_led(void *priv)
 {
 	int i = 0;
 	int pin = 24;
-	
+
 	hal_gpio_init(pin);
 	hal_pinmux_set_function(pin, 8);
 	hal_gpio_set_direction(pin, HAL_GPIO_DIRECTION_OUTPUT);
-	while(1){
-		printf("i = %d\r\n", i++);
+	while (1) {
+		_printf("i = %d\r\n", i++);
 		task_sleep(1500);
 		hal_gpio_set_output(pin, HAL_GPIO_DATA_LOW);
 		task_sleep(1500);
 		hal_gpio_set_output(pin, HAL_GPIO_DATA_HIGH);
 	}
 }
-
-#if _EXE_
 
 int main(void)
 {
@@ -58,5 +57,4 @@ int main(void)
 	return 0;
 }
 
-#endif
 #endif

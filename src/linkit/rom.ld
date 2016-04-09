@@ -23,22 +23,22 @@
 /*-             socware.help@gmail.com                                        */
 /*-                                                                           */
 /*-****************************************************************************/
+
 OUTPUT_FORMAT("elf32-littlearm", "elf32-bigarm", "elf32-littlearm")
 OUTPUT_ARCH(arm)
 ENTRY(_start)
 STARTUP(startup.o)
-GROUP( libc.a libgcc.a libhcos.a libsoc-linkit.a libhal.a)
 SECTIONS
 {
 	. = 0x1007c000;
 	.vectors	: { KEEP(*(.vectors))}
 	.vectors.mon	: { KEEP(*(.vectors.mon))}
-	.text           : { *(.text .text.* .rodata* *TEXT ) } =0
+	.text           : { *(.text .text.* .rodata*) } =0
 	/DISCARD/ : { *.ARM.* }
 	_data_load = . ;
 	. = 0x20000000;
 	_data_sta = .;
-	.data           : AT( _data_load) {  *(.data .data.* ) }
+	.data           : AT( _data_load) {  *(.data .data.* *TEXT) }
 	_data_end = . ;
 	. = ALIGN(4);
 	_bss_sta = .;
@@ -46,7 +46,7 @@ SECTIONS
 	_bss_end = .;
 	_end = . ;
 
-	PROVIDE(_stack = _end + 2024 );
+	PROVIDE(_stack = _end + 8192 );
 
 	.comment         0 : { *(.comment) }
 	.debug           0 : { *(.debug) }

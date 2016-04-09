@@ -99,7 +99,7 @@ void *core_alloc(unsigned sz, int align_bits);
 
 char *_sbrk(int nbytes)
 {
-	void* p = core_alloc(nbytes, 0);
+	void *p = core_alloc(nbytes, 0);
 	return p;
 }
 

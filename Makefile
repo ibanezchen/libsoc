@@ -1,13 +1,12 @@
 PREFIX ?= $(shell pwd)/../prefix/$(CROSS:%-=%)
-PLT:=linkit
-NAME   :=soc-$(PLT)
+SOC:=linkit
+NAME   :=soc-$(SOC)
 TARGET :=arm-none-eabi
 CROSS  :=$(TARGET)-
 CPU    :=arm
-HAL?=1
-include src/$(PLT)/Makefile.inc
+include src/$(SOC)/Makefile.inc
 
-INCLUDE:=-Iinclude -I$(PREFIX)/include -Isrc -Isrc/$(PLT) $(PLT_INC)
+INCLUDE:=-Iinclude -I$(PREFIX)/include -Isrc -Isrc/$(SOC) $(SOC_INC)
 
 COPTS  ?=-march=armv7-m -mthumb 
 AARCH  :=7
@@ -17,22 +16,21 @@ MOPTS  :=$(COPTS) \
 	-fno-builtin -fno-common \
 	-ffunction-sections -fdata-sections
 BAUD?=230400
-CONFIG :=-DHAL=$(HAL) -DHZ=100 -DHC=1
+CONFIG :=-DHZ=1000 -DHC=1 -DWIFI_SSID=$(WIFI_SSID) -DWIFI_PASSWD=$(WIFI_PASSWD)
 ASFLAGS:=$(MOPTS) $(CONFIG) -O1 -g -Wall -Werror -D __ASSEMBLY__
 CFLAGS :=$(MOPTS) $(CONFIG) -O1 -g -Wall -Werror -fno-builtin
 LSCRIPT?=rom.ld
-LDFLAGS:=$(MOPTS) -g -nostartfiles -nodefaultlibs -L$(PREFIX)/lib -L . -Tsrc/$(PLT)/$(LSCRIPT) dbg.o \
-	-L/home/ibanez/ws-os/gva/project/mt7687_hdk/apps/lwip_socket/GCC/Build #LINKIT
+LDFLAGS:=$(MOPTS) -g -nostartfiles -nodefaultlibs -L$(PREFIX)/lib -L . -Tsrc/$(SOC)/$(LSCRIPT) dbg.o 
 
 MSCRIPT:=$(PREFIX)/share/mod.ld
 LIB    :=lib$(NAME).a
 
-ALL    :=startup.o hello.elf $(PLT_ALL)
-LDFLAGS+= -Wl,--start-group -lhcos -lc -lgcc $(PLT_LIB) -Wl,--end-group
+ALL    :=startup.o hello.elf $(SOC_ALL)
+LDFLAGS+= -Wl,--start-group -lhcos -lc -lgcc $(SOC_LIB) -Wl,--end-group
 CLEAN  :=
 CPU    :=arm
 
-VPATH  :=src src/$(PLT)
+VPATH  :=src src/$(SOC)
 VOBJ   :=$(patsubst %.S,%.o, \
 		$(patsubst %.c,%.o, \
 		$(patsubst %.cpp, %.o, \
@@ -46,14 +44,14 @@ include $(PREFIX)/share/Makefile.rule
 
 F?=hello.elf
 
-ddd:
+ddd:$(F)
 	ddd --debugger $(CROSS)gdb -x openocd.gdb $(F)
 	
 gdb:
 	$(CROSS)gdb -x openocd.gdb $(F)
 
 brd-dbg:
-	openocd -f bin/$(PLT)/cmsis.cfg -s bin
+	openocd -f bin/$(SOC)/cmsis.cfg -s bin
 	
 brd-console:
 	echo "pu port             /dev/ttyACM0" >~/.minirc.cdc
@@ -63,3 +61,8 @@ brd-console:
 	echo "pu parity           N" >>~/.minirc.cdc
 	echo "pu stopbits         1" >>~/.minirc.cdc
 	minicom cdc
+
+log:
+	sed -e 's/[ \t]*$$//g' -i ../bad.log
+	sed -e 's/[ \t]*$$//g' -i ../ok.log
+

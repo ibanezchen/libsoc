@@ -22,24 +22,25 @@
 /*-             http://socware.net                                            */
 /*-                                                                           */
 /*-****************************************************************************/
+
 #ifndef SOC130408
 #define SOC130408
 
 #include "uart.h"
 
 enum {
-	BASE_TOPCFG=0x83008000,
-	BASE_UART0= 0x83030000,
+	BASE_TOPCFG = 0x83008000,
+	BASE_UART0 = 0x83030000,
 };
 
 enum {
-	IRQ_TIME  = 0xffffffff,
-	IRQ_UART0 =  0,
+	IRQ_TIME = 0xffffffff,
+	IRQ_UART0 = 0,
 };
 
 enum {
-	UART_BAUD =115200,
-	UART_CLK =20000000,
+	UART_BAUD = 115200,
+	UART_CLK = 20000000,
 };
 
 static inline unsigned tmr_ticks2ms(unsigned ticks)

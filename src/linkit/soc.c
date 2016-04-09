@@ -22,54 +22,77 @@
 /*-             http://socware.net                                            */
 /*-                                                                           */
 /*-****************************************************************************/
-#include <hcos/task.h>
+
+#include <hcos/irq.h>
 #include <hcos/soc.h>
+#include <hcos/io.h>
+#include <hcos/core.h>
+#include <hcos/cpu/cache.h>
+#include <hcos/cpu/nvic.h>
+#include <hcos/cpu/_cpu.h>
+#include <hcos/cfg.h>
+#include "uart.h"
+#include "_soc.h"
+#include "plt.h"
 
-#include <string.h>
-#include <stdio.h>
+void top_xtal_init(void);
 
-#include "term.h"
+unsigned top_xtal_freq_get(void);
 
-#if _EXE_
+uart_t u0;
 
-static volatile float g = 3.14;
+static unsigned freq;
 
-static void fast(void *priv)
+unsigned freq_init()
 {
-	unsigned ts = (unsigned)priv;
-	g = g + g;
-	task_sleep(10);
-	irq_sgi(12);
-	task_sleep(10);
-	while (1) {
-		_printf("fast %d\r\n", ts);
-		task_sleep(ts);
-	}
+	top_xtal_init();
+	return top_xtal_freq_get();
 }
 
-static void slow(void *priv)
+void soc_init(void)
 {
-	unsigned ts = (unsigned)priv;
-	while (1) {
-		_printf("slow %d\r\n", ts);
-		task_sleep(ts);
-	}
+	freq = freq_init();
+	uart_init(&u0, BASE_UART0, -1);
 }
 
-irq_handler(isr_use_float)
+unsigned irq_mask(unsigned irq)
 {
-	g += 10.2;
-	return IRQ_DONE;
+	return nvic_irq_mask(irq);
 }
 
-int main(void)
+void irq_unmask(unsigned irq)
 {
-	core_init();
-	irq_init(12, isr_use_float);
-	task_new("fast", fast, 56, 1024, -1, (void *)30);
-	task_new("slow", slow, 56, 1024, -1, (void *)50);
-	core_start();
+	nvic_irq_unmask(irq);
+}
+
+void irq_sgi(unsigned irq)
+{
+	nvic_sgi(irq);
+}
+
+void tmr_enable(int on)
+{
+	cpu_stick_en(on);
+}
+
+int tmr_init_soc(unsigned *rtcs2tick)
+{
+	cpu_stick_init(freq / HZ);
+	//set Priority for Systick Interrupt
+	cpu_pri(E_STICK, 5);
+	// FIXME: RTC init
+	return IRQ_TIME;
+}
+
+unsigned soc_rtcs()
+{
 	return 0;
+	//FIXME: return readl(BASE_RTC + 0x4);
 }
 
-#endif
+void tmr_tickless_soc(int next_expire)
+{
+	//FIXME:
+	//if (!tmr_off)
+	//      writel(next_expire << 2, (void *)BASE_RTC + 0x0);
+}

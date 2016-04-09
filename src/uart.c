@@ -45,10 +45,11 @@ void uart_put(uart_t * o, char c)
 {
 	unsigned base = o->base;
 	while (1) {
-		unsigned short lsr;lsr = readb(UART_LSR(base));
+		unsigned short lsr;
+		lsr = readb(UART_LSR(base));
 		if (lsr & UART_LSR_THRE) {
 			//FIXME:
-			if(c == '\n')
+			if (c == '\n')
 				writeb('\r', (void *)UART_THR(base));
 			writeb(c, (void *)UART_THR(base));
 			break;

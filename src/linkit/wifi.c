@@ -23,68 +23,34 @@
 /*-                                                                           */
 /*-****************************************************************************/
 
-#include <hcos/irq.h>
-#include <hcos/soc.h>
-#include <hcos/io.h>
-#include <hcos/core.h>
-#include <hcos/cpu/cache.h>
-#include <hcos/cpu/nvic.h>
-#include <hcos/cpu/_cpu.h>
-#include <hcos/cfg.h>
-#include "uart.h"
-#include "_soc.h"
+#include "wifi_inband.h"
+#include "wifi.h"
+#include "wifi_api.h"
+#include <string.h>
 
-uart_t u0;
+void network_dhcp_start(unsigned char opmode);
 
-void soc_init(void)
+void wifi_init(wifi_auth_t auth, char *ssid, char *passwd)
 {
-	uart_init(&u0, BASE_UART0, -1);
+	unsigned char opmode = WIFI_MODE_STA_ONLY;
+	unsigned char port = WIFI_PORT_STA;
+	wifi_encrypt_type_t encrypt = WIFI_ENCRYPT_TYPE_TKIP_AES_MIX;
+	unsigned char nv_opmode;
+
+	if (wifi_config_init() == 0) {
+		wifi_config_get_opmode(&nv_opmode);
+		if (nv_opmode != opmode) {
+			wifi_config_set_opmode(opmode);
+		}
+		wifi_config_set_ssid(port, (unsigned char *)ssid, strlen(ssid));
+		wifi_config_set_security_mode(port, auth, encrypt);
+		wifi_config_set_wpa_psk_key(port, (unsigned char *)passwd,
+					    strlen(passwd));
+		wifi_config_reload_setting();
+	}
 }
 
-unsigned irq_mask(unsigned irq)
+void dhcp_init()
 {
-	return nvic_irq_mask(irq);
+	network_dhcp_start(WIFI_MODE_STA_ONLY);
 }
-
-void irq_unmask(unsigned irq)
-{
-	nvic_irq_unmask(irq);
-}
-
-void irq_eoi(unsigned irq)
-{
-	nvic_eoi(irq);
-}
-
-void irq_sgi(unsigned irq)
-{
-	nvic_sgi(irq);
-}
-
-void tmr_enable(int on)
-{
-	cpu_stick_en(on);
-}
-
-int tmr_init_soc(unsigned *rtcs2tick)
-{
-	cpu_stick_init(40000000/1000);
-	//set Priority for Systick Interrupt 
-	//cpu_pri(E_STICK, 0x1f);  
-	// FIXME: RTC init 
-	return IRQ_TIME;
-}
-
-unsigned soc_rtcs()
-{
-	return 0;
-	//FIXME: return readl(BASE_RTC + 0x4);
-}
-
-void tmr_tickless_soc(int next_expire)
-{
-	//FIXME:
-	//if (!tmr_off)
-	//	writel(next_expire << 2, (void *)BASE_RTC + 0x0);
-}
-

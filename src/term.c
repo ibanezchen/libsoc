@@ -24,9 +24,11 @@
 /*-****************************************************************************/
 #include <stdarg.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "uart.h"
 #include "_soc.h"
+#include "term.h"
 
 #define UDIV_R(N, D, R) (((R)=(N)%(D)), ((N)/(D)))
 
@@ -60,13 +62,17 @@ static void itoa(char **buf, unsigned i, unsigned base)
 	}
 }
 
-void _print(char *fmt, va_list ap)
+void _print(const char *fmt, va_list ap, char *buf, unsigned sz)
 {
-	char buf[160];
+	char _buf[160];
 	int ival;
-	char *p, *sval;
+	const char *p, *sval;
 	char *bp, cval;
 
+	if (!buf) {
+		buf = _buf;
+		sz = sizeof(_buf);
+	}
 	bp = buf;
 	*bp = 0;
 
@@ -75,7 +81,11 @@ void _print(char *fmt, va_list ap)
 			*bp++ = *p;
 			continue;
 		}
-		switch (*++p) {
+		++p;
+		while (isdigit((int)(*p))) {
+			p++;
+		}
+		switch (*p) {
 		case 'd':
 			ival = va_arg(ap, int);
 			if (ival < 0) {
@@ -84,11 +94,11 @@ void _print(char *fmt, va_list ap)
 			}
 			itoa(&bp, ival, 10);
 			break;
-
+		case 'u':
+		case 'U':
 		case 'x':
+		case 'X':
 			ival = va_arg(ap, int);
-			*bp++ = '0';
-			*bp++ = 'x';
 			itoa(&bp, ival, 16);
 			break;
 		case 'c':
@@ -104,14 +114,17 @@ void _print(char *fmt, va_list ap)
 			break;
 		}
 	}
-
+	if (bp >= buf + sz)
+		while (1) ;
+	if (_buf != buf)
+		return;
 	*bp = 0;
 	for (bp = buf; *bp; bp++) {
 		uart_put(&u0, *bp);
 	}
 }
 
-void _printf(char *str, ...)
+void _printf(const char *str, ...)
 {
 	if (str == 0) {
 		return;
@@ -119,7 +132,6 @@ void _printf(char *str, ...)
 
 	va_list ap;
 	va_start(ap, str);
-	_print(str, ap);
+	_print(str, ap, 0, 0);
 	va_end(ap);
 }
-

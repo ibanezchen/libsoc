@@ -1,18 +1,7 @@
-PLT_INC=-I/home/ibanez/ws-os/gva/driver/board/mt76x7_hdk/inc	\
-	-I/home/ibanez/ws-os/gva/middleware/third_party/lwip/src/include/	\
-	-I/home/ibanez/ws-os/gva/middleware/third_party/lwip/ports/include/	\
-	-I/home/ibanez/ws-os/gva/middleware/MTK/nvdm/inc/	\
-	-I/home/ibanez/ws-os/gva/middleware/MTK/nvram/inc/ \
-	-I/home/ibanez/ws-os/gva/driver/chip/inc/ \
-	-I/home/ibanez/ws-os/gva/driver/chip/mt7687/inc/	\
-	-I/home/ibanez/ws-os/gva/driver/CMSIS/Device/MTK/mt7687/Include/ \
-	-I/home/ibanez/ws-os/gva/driver/CMSIS/Include/	\
-	-I/home/ibanez/ws-os/gva/driver/chip/mt7687/inc \
-	-I/home/ibanez/ws-os/gva/kernel/service/inc
-ifeq ($(HAL),1)
-	PLT_ALL=flash_rw.elf gpio_led.elf net.elf net.elf.bin
-	PLT_LIB=-lhal -llwip -lbsp -lservice -lbsp_sec -lnvram -lservice -ldhcpd -lminisupp
-endif
+SOC_INC=-I$(PREFIX)/include/linkit
+
+SOC_ALL=flash_rw.elf gpio_led.elf net.elf net.elf.bin
+SOC_LIB=-lhal -llwip -lbsp -lservice -lbsp_sec -lnvram -lservice -ldhcpd -lminisupp -lsoc-linkit bin/linkit/system_mt7687.o
 
 .PHONY:hello.rom.elf
 hello.rom.elf:

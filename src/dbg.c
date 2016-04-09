@@ -27,6 +27,7 @@
 #include <hcos/task.h>
 #include <hcos/cpu/reg.h>
 #include <stdio.h>
+#include "term.h"
 
 void _exit(int status)
 {
@@ -37,16 +38,17 @@ void _exit(int status)
 
 void _fail(void *addr, const char *f, unsigned line)
 {
-	printf("_fail 0x%08x %s:%d\n", (unsigned)addr, f, line);
+	_printf("_fail 0x%08x %s:%d\r\n", (unsigned)addr, f, line);
 	_exit(-1);
 }
 
-void _abt(void * _ctx)
+void _abt(void *_ctx)
 {
-	while(1);
+	while (1) ;
 }
 
 void _stackov(task_t * t)
 {
-	printf("stack ov\n");
+	_printf("stack ov\r\n");
+	while (1) ;
 }

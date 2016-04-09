@@ -33,9 +33,7 @@
 #ifndef __LWIPOPTS_H__
 #define __LWIPOPTS_H__
 
-
 #define LWIP_SO_RCVTIMEO                1
-
 
 #define TCPIP_MBOX_SIZE                 16
 #define DEFAULT_RAW_RECVMBOX_SIZE       16
@@ -52,15 +50,10 @@
 //for ip display
 #define LWIP_NETIF_STATUS_CALLBACK      1
 
-
 #define ETH_PAD_SIZE    0
-
-
 
 #define NO_SYS 0
 #define LWIP_CALLBACK_API 1
-
-
 
 /*
    ------------------------------------
@@ -78,7 +71,6 @@
 * speed and usage from interrupts!
 */
 #define MEMP_MEM_MALLOC                 1
-
 
 /* MEM_SIZE: the size of the heap memory. If the application will send
 a lot of data that needs to be copied, this should be set high. */
@@ -121,8 +113,6 @@ a lot of data that needs to be copied, this should be set high. */
  */
 #define MEMP_NUM_NETCONN        10
 
-
-
 /*
    ----------------------------------
    ---------- Pbuf options ----------
@@ -141,8 +131,8 @@ a lot of data that needs to be copied, this should be set high. */
  * link level header. The default is 14, the standard value for
  * Ethernet.
  */
-#define RESERVED_HLEN            0    //depend on CFG_CONNSYS_TXD_PAD_SIZE
-#define PBUF_LINK_ENCAPSULATION_HLEN 2 // for WiFi headroom (TX zero copy)
+#define RESERVED_HLEN            0	//depend on CFG_CONNSYS_TXD_PAD_SIZE
+#define PBUF_LINK_ENCAPSULATION_HLEN 2	// for WiFi headroom (TX zero copy)
 #define PBUF_LINK_HLEN           (RESERVED_HLEN + 14 + ETH_PAD_SIZE)
 /*
    ---------------------------------
@@ -175,8 +165,6 @@ a lot of data that needs to be copied, this should be set high. */
 /* Maximum number of retransmissions of SYN segments. */
 #define TCP_SYNMAXRTX           4
 
-
-
 /*
    ---------------------------------
    ---------- ARP options ----------
@@ -208,7 +196,6 @@ a lot of data that needs to be copied, this should be set high. */
 /* ---------- ICMP options ---------- */
 #define ICMP_TTL                255
 
-
 /* ---------- DHCP options ---------- */
 /* Define LWIP_DHCP to 1 if you want DHCP configuration of
    interfaces. DHCP is not implemented in lwIP 0.5.1, however, so
@@ -223,10 +210,8 @@ a lot of data that needs to be copied, this should be set high. */
 #define LWIP_UDP                1
 #define UDP_TTL                 255
 
-
 /* ---------- IGMP options ---------- */
 #define LWIP_IGMP                1
-
 
 /*
    ------------------------------------
@@ -234,7 +219,6 @@ a lot of data that needs to be copied, this should be set high. */
    ------------------------------------
 */
 #define LWIP_AUTOIP            0
-
 
 /*
    ----------------------------------
@@ -250,7 +234,6 @@ a lot of data that needs to be copied, this should be set high. */
 */
 #define PPP_SUPPORT            0
 
-
 /*
    ------------------------------------------------
    ---------- Network Interfaces options ----------
@@ -263,13 +246,11 @@ a lot of data that needs to be copied, this should be set high. */
  */
 #define LWIP_NETIF_LOOPBACK             1
 
-
 /**
  * LWIP_LOOPBACK_MAX_PBUFS: Maximum number of pbufs on queue for loopback
  * sending for each netif (0 = disabled)
  */
 #define LWIP_LOOPBACK_MAX_PBUFS         12
-
 
 /*
    ------------------------------------
@@ -280,7 +261,5 @@ a lot of data that needs to be copied, this should be set high. */
  * LWIP_HAVE_LOOPIF==1: Support loop interface (127.0.0.1) and loopif.c
  */
 #define LWIP_HAVE_LOOPIF                1
-
-
 
 #endif /* __LWIPOPTS_H__ */

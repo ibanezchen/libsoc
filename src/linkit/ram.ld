@@ -23,11 +23,11 @@
 /*-             socware.help@gmail.com                                        */
 /*-                                                                           */
 /*-****************************************************************************/
+
 OUTPUT_FORMAT("elf32-littlearm", "elf32-bigarm", "elf32-littlearm")
 OUTPUT_ARCH(arm)
 ENTRY(_start)
 STARTUP(startup.o)
-GROUP( libc.a libgcc.a libhcos.a libsoc-linkit.a)
 SECTIONS
 {
 	. = 0x20000000;
@@ -45,7 +45,7 @@ SECTIONS
 	_end = . ;
 
 	PROVIDE(_stack = _end + 2024 );
-	
+
 	.comment         0 : { *(.comment) }
 	.debug           0 : { *(.debug) }
 	.line            0 : { *(.line) }
