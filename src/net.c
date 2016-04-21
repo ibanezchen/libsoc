@@ -119,9 +119,12 @@ static void tcp_server_init(const struct netif *netif)
 
 static void main_thread(void *p)
 {
+	char* ssid = xstr(WIFI_SSID);
+	char* pass = xstr(WIFI_PASSWD);
 	plt_init();
 	net_init(tcp_server_init);
-	wifi_init(WIFI_WPA_PSK_WPA2_PSK, xstr(WIFI_SSID), xstr(WIFI_PASSWD));
+	_printf("wifi=%s %s\r\n", ssid, pass);
+	wifi_init(WIFI_WPA_PSK_WPA2_PSK, ssid, pass);
 	dhcp_init();
 }
 
