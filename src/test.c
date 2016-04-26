@@ -22,123 +22,18 @@
 /*-             http://socware.net                                            */
 /*-                                                                           */
 /*-****************************************************************************/
-#define _DBG 0
-#include <hcos/dbg.h>
-#include <hcos/irq.h>
-#include <hcos/soc.h>
-#include <hcos/io.h>
+#include <hcos/test.h>
 #include <hcos/core.h>
-#include <hcos/cpu/cache.h>
 #include <hcos/cpu/nvic.h>
-#include <hcos/cpu/_cpu.h>
-#include <hcos/cfg.h>
-#include "uart.h"
-#include "_soc.h"
-#include "plt.h"
-#include "term.h"
 
-void top_xtal_init(void);
+#if _EXE_
 
-unsigned top_xtal_freq_get(void);
-
-uart_t u0;
-
-static unsigned freq;
-
-unsigned freq_init()
+int main(void)
 {
-	top_xtal_init();
-	return top_xtal_freq_get();
+	core_init();
+	core_test();
+	core_start();
+	return 0;
 }
 
-void soc_init(void)
-{
-	freq = freq_init();
-	uart_init(&u0, BASE_UART0, -1);
-}
-
-unsigned irq_mask(unsigned irq)
-{
-	if(irq == IRQ_TIME) {
-		cpu_stick_en(0);
-		return 1;
-	}
-	return nvic_irq_mask(irq);
-}
-
-#include "mt7687.h"
-void irq_unmask(unsigned irq)
-{
-	if(irq == IRQ_TIME) {
-		cpu_stick_en(1);
-		return;
-	}
-	NVIC_ClearPendingIRQ(irq);
-	asm_mb();
-	asm_mb();
-	asm_mb();
-	NVIC_DisableIRQ(irq);
-	asm_mb();
-	NVIC_ClearPendingIRQ(irq);
-	asm_mb();
-	nvic_irq_unmask(irq);
-}
-
-void irq_sgi(unsigned irq)
-{
-	nvic_sgi(irq);
-}
-
-void tmr_enable(int on)
-{
-	cpu_stick_en(on);
-}
-
-irq_handler(rtc_irq)
-{
-	reg(BASE_GPT+0x0) = 0x2;
-	dbg("rtc= %x\r\n", soc_rtcs());
-	return IRQ_DONE;
-}
-
-int tmr_init_soc(unsigned *rtcs2tick)
-{
-	cpu_stick_init(freq / HZ);
-	//set Priority for Systick Interrupt
-	cpu_pri(E_STICK, 5);
-	//enable tickless timer
-	nvic_set_pri(IRQ_GPT, 5);
-	irq_init(IRQ_GPT, rtc_irq);
-	// HZ=128, gpt=1024
-	* rtcs2tick = 3;
-	irq_unmask(IRQ_GPT);
-
-	//enable gpt0 for count
-	reg(BASE_GPT+0x14) = 0xffffffff;
-	reg(BASE_GPT+0x10) = 1;
-
-	//enable gpt1 for interrupt
-	reg(BASE_GPT+0x04) = 2;
-	return IRQ_TIME;
-}
-
-unsigned soc_rtcs()
-{
-	return 0xffffffff - readl(BASE_GPT + 0x40);
-}
-
-void tmr_tickless_soc(unsigned next_expire)
-{
-	unsigned max = (0xffffffff >> 3);
-	unsigned dur = next_expire > max ? max:next_expire;
-	dbg("rtc_book= %x ++ %x %x %x\r\n", soc_rtcs(), dur<<3, max, next_expire);
-	reg(BASE_GPT+0x24) = dur<<3;
-	reg(BASE_GPT+0x20) = 0x1;
-}
-
-void cache_i_inv(unsigned sta, unsigned sz)
-{}
-
-void cache_d_flu(unsigned sta, unsigned sz)
-{}
-
+#endif

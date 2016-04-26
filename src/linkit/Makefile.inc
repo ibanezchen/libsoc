@@ -3,24 +3,18 @@ SOC_INC=-I$(PREFIX)/include/linkit
 SOC_ALL=flash_rw.elf gpio_led.elf net.elf net.elf.bin
 SOC_LIB=-lhal -llwip -lbsp -lservice -lbsp_sec -lnvram -lservice -ldhcpd -lminisupp -lsoc-linkit bin/linkit/system_mt7687.o
 
-.PHONY:hello.rom.elf
-hello.rom.elf:
+utest:
 	$(MAKE) clean
-	LSCRIPT=rom.ld $(MAKE) hello.elf
-	cp hello.elf $@
+	$(MAKE) test.elf.pack LSCRIPT=ram.ld
+	$(MAKE) ddd F=test.elf.pack
 
-.PHONY:hello.rom
-hello.rom:hello.rom.elf
-	LSCRIPT=rom.ld $(MAKE) hello.elf.bin
-	cp hello.elf.bin $@
-
-.PHONY:net.rom.elf
-net.rom.elf:
+hello:
 	$(MAKE) clean
-	LSCRIPT=rom.ld $(MAKE) net.elf
-	cp net.elf $@
+	$(MAKE) hello.elf LSCRIPT=ram.ld
+	$(MAKE) ddd F=hello.elf
 
 .PHONY:net.rom
-net.rom:net.rom.elf
-	LSCRIPT=rom.ld $(MAKE) net.elf.bin
-	cp net.elf.bin $@
+net.rom:
+	$(MAKE) clean
+	$(MAKE) net.elf.bin LSCRIPT=rom.ld
+	mv net.elf.bin $@

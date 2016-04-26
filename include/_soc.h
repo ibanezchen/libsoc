@@ -31,11 +31,13 @@
 enum {
 	BASE_TOPCFG = 0x83008000,
 	BASE_UART0 = 0x83030000,
+	BASE_GPT = 0x83050000,
 };
 
 enum {
 	IRQ_TIME = 0xffffffff,
 	IRQ_UART0 = 0,
+	IRQ_GPT = 24,
 };
 
 enum {

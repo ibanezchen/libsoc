@@ -44,7 +44,7 @@ SECTIONS
 	_bss_end = .;
 	_end = . ;
 
-	PROVIDE(_stack = _end + 2024 );
+	PROVIDE(_stack = _end + 8192 );
 
 	.comment         0 : { *(.comment) }
 	.debug           0 : { *(.debug) }

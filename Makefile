@@ -16,7 +16,7 @@ MOPTS  :=$(COPTS) \
 	-fno-builtin -fno-common \
 	-ffunction-sections -fdata-sections
 BAUD?=230400
-CONFIG :=-DHZ=1000 -DHC=1 -DWIFI_SSID=$(WIFI_SSID) -DWIFI_PASSWD=$(WIFI_PASSWD)
+CONFIG :=-DHZ=128 -DHC=1 -DWIFI_SSID=$(WIFI_SSID) -DWIFI_PASSWD=$(WIFI_PASSWD)
 ASFLAGS:=$(MOPTS) $(CONFIG) -O1 -g -Wall -Werror -D __ASSEMBLY__
 CFLAGS :=$(MOPTS) $(CONFIG) -O1 -g -Wall -Werror -fno-builtin
 LSCRIPT?=rom.ld
@@ -47,8 +47,9 @@ F?=hello.elf
 ddd:$(F)
 	ddd --debugger $(CROSS)gdb -x openocd.gdb $(F)
 	
-gdb:
-	$(CROSS)gdb -x openocd.gdb $(F)
+ddd-attach:
+	echo "target remote 127.0.0.1:3333" > attach.gdb
+	ddd --debugger $(CROSS)gdb -x attach.gdb $(F)
 
 brd-dbg:
 	openocd -f bin/$(SOC)/cmsis.cfg -s bin
@@ -61,8 +62,4 @@ brd-console:
 	echo "pu parity           N" >>~/.minirc.cdc
 	echo "pu stopbits         1" >>~/.minirc.cdc
 	minicom cdc
-
-log:
-	sed -e 's/[ \t]*$$//g' -i ../bad.log
-	sed -e 's/[ \t]*$$//g' -i ../ok.log
 

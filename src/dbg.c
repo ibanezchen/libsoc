@@ -31,8 +31,7 @@
 
 void _exit(int status)
 {
-	unsigned *p = (unsigned *)0xB0100004;
-	*p = status;
+	_printf("exit %d\n", status);
 	while (1) ;
 }
 
