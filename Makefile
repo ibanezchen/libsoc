@@ -7,26 +7,24 @@ CPU    :=arm
 include src/$(SOC)/Makefile.inc
 
 INCLUDE:=-Iinclude -I$(PREFIX)/include -Isrc -Isrc/$(SOC) $(SOC_INC)
-
-COPTS  ?=-march=armv7-m -mthumb 
+COPTS  ?=-march=armv7-m -mthumb -fsingle-precision-constant -Wdouble-promotion -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 AARCH  :=7
 MOPTS  :=$(COPTS) \
 	-DCFG_AARCH=$(AARCH) \
-	-fsingle-precision-constant -Wdouble-promotion -mfpu=fpv4-sp-d16 -mfloat-abi=hard \
 	-fno-builtin -fno-common \
-	-ffunction-sections -fdata-sections
+	-ffunction-sections -fdata-sections -fshort-enums
 BAUD?=230400
 CONFIG :=-DHZ=128 -DHC=1 -DWIFI_SSID=$(WIFI_SSID) -DWIFI_PASSWD=$(WIFI_PASSWD)
-ASFLAGS:=$(MOPTS) $(CONFIG) -O1 -g -Wall -Werror -D __ASSEMBLY__
-CFLAGS :=$(MOPTS) $(CONFIG) -O1 -g -Wall -Werror -fno-builtin
+ASFLAGS:=$(MOPTS) $(CONFIG) -O2 -g -Wall -Werror -D __ASSEMBLY__
+CFLAGS :=$(MOPTS) $(CONFIG) -O2 -g -Wall -Werror
 LSCRIPT?=rom.ld
-LDFLAGS:=$(MOPTS) -g -nostartfiles -nodefaultlibs -L$(PREFIX)/lib -L . -Tsrc/$(SOC)/$(LSCRIPT) dbg.o 
+LDFLAGS:=$(MOPTS) -g -nostartfiles -nodefaultlibs -L$(PREFIX)/lib -L . -Tbin/$(SOC)/$(LSCRIPT)
+LDFLAGS+= -Wl,--start-group -lhcos -lc -lgcc $(SOC_LIB) -Wl,--end-group
 
 MSCRIPT:=$(PREFIX)/share/mod.ld
 LIB    :=lib$(NAME).a
 
-ALL    :=startup.o hello.elf $(SOC_ALL)
-LDFLAGS+= -Wl,--start-group -lhcos -lc -lgcc $(SOC_LIB) -Wl,--end-group
+ALL    :=$(PREFIX)/bin/$(SOC) $(SOC_ALL)
 CLEAN  :=
 CPU    :=arm
 
@@ -41,6 +39,11 @@ VOBJ   :=$(patsubst %.S,%.o, \
 default:all
 
 include $(PREFIX)/share/Makefile.rule
+
+.PHONY:$(PREFIX)/bin/$(SOC)
+$(PREFIX)/bin/$(SOC):
+	rm -rf $@
+	cp -r bin/$(SOC) $@
 
 F?=hello.elf
 
