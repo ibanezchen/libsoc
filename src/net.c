@@ -35,7 +35,7 @@
 #include "term.h"
 #include "_soc.h"
 #include "plt.h"
-#include "wifi.h"
+#include "plt-wifi.h"
 
 #define SOCK_TCP_SRV_PORT        6500
 #define SOCK_UDP_SRV_PORT        6600

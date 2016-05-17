@@ -23,35 +23,95 @@
 /*-                                                                           */
 /*-****************************************************************************/
 
-#include "wifi_inband.h"
-#include "wifi.h"
-#include "wifi_api.h"
-#include "plt-wifi.h"
+#if _EXE_
+
+#include <hcos/task.h>
+#include <hcos/soc.h>
 #include <string.h>
 
-void network_dhcp_start(unsigned char opmode);
+#include "lwip/netif.h"
+#include "lwip/tcpip.h"
+#include "lwip/sockets.h"
+#include "lwip/netdb.h"
 
-void wifi_init(wifi_auth_t auth, char *ssid, char *passwd)
+#include "term.h"
+#include "_soc.h"
+#include "plt.h"
+#include "plt-wifi.h"
+
+#define PORT	80
+#define HN	"www.google.com"
+
+unsigned buf[16], sz;
+
+static void tcp_client(void *p)
 {
-	unsigned char opmode = WIFI_MODE_STA_ONLY;
-	unsigned char port = WIFI_PORT_STA;
-	wifi_encrypt_type_t encrypt = WIFI_ENCRYPT_TYPE_TKIP_AES_MIX;
-	unsigned char nv_opmode;
+	char* get = "GET index.html\r\n";
+	struct sockaddr_in addr;
+	int s, r;
+	struct hostent *hp = gethostbyname(HN);
 
-	if (wifi_config_init() == 0) {
-		wifi_config_get_opmode(&nv_opmode);
-		if (nv_opmode != opmode) {
-			wifi_config_set_opmode(opmode);
-		}
-		wifi_config_set_ssid(port, (unsigned char *)ssid, strlen(ssid));
-		wifi_config_set_security_mode(port, auth, encrypt);
-		wifi_config_set_wpa_psk_key(port, (unsigned char *)passwd,
-					    strlen(passwd));
-		wifi_config_reload_setting();
+	if (hp) {
+		printf("err DNS\r\n");
+		return;
 	}
+	printf("%s = %s\r\n",
+		hp->h_name,
+		inet_ntoa(*(struct in_addr*)(hp -> h_addr_list[0])));
+	s = socket(AF_INET, SOCK_STREAM, 0);
+	if (s < 0) {
+		printf("err socket\r\n");
+		return ;
+	}
+
+	memset(&addr, 0, sizeof(addr));
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(PORT);
+	addr.sin_addr = *(struct in_addr*)hp->h_addr_list[0];
+	//inet_pton(AF_INET, HOST, &addr.sin_addr);
+	sz = strlen(get);
+	memcpy(buf, get, sz);
+	if(connect(s, (const struct sockaddr *)&addr,sizeof(addr)) < 0){
+		printf("err connect\r\n");
+		return ;
+	}
+	send(s, buf, sz, 0);
+	while ((r = recv(s, buf, sizeof(buf) - 1, 0))) {
+		if (r <= 0) {
+			printf("err recv\r\n");
+			break;
+		}
+		((char*)buf)[r] = 0;
+		printf("data: %s\r\n", (char*)buf);
+	}
+	lwip_close(s);
 }
 
-void dhcp_init()
+static void tcp_client_init(const struct netif *netif)
 {
-	network_dhcp_start(WIFI_MODE_STA_ONLY);
+	task_new("tcp_client", tcp_client, 5, 2048, -1, 0);
 }
+
+#define xstr(s) str(s)
+#define str(s) #s
+
+static void main_thread(void *p)
+{
+	char* ssid = xstr(WIFI_SSID);
+	char* pass = xstr(WIFI_PASSWD);
+	plt_init();
+	net_init(tcp_client_init);
+	_printf("wifi=%s %s\r\n", ssid, pass);
+	wifi_init(WIFI_WPA_PSK_WPA2_PSK, ssid, pass);
+	dhcp_init();
+}
+
+int main(void)
+{
+	core_init();
+	task_new("init", main_thread, 8, 4096, -1, 0);
+	core_start();
+	return 0;
+}
+
+#endif

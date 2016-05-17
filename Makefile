@@ -24,7 +24,8 @@ LDFLAGS+= -Wl,--start-group -lhcos -lc -lgcc $(SOC_LIB) -Wl,--end-group
 MSCRIPT:=$(PREFIX)/share/mod.ld
 LIB    :=lib$(NAME).a
 
-ALL    :=$(PREFIX)/bin/$(SOC) $(SOC_ALL)
+ALL    :=include/soc-mcfg.h \
+	$(PREFIX)/bin/$(SOC) $(SOC_ALL)
 CLEAN  :=
 CPU    :=arm
 
@@ -44,6 +45,10 @@ include $(PREFIX)/share/Makefile.rule
 $(PREFIX)/bin/$(SOC):
 	rm -rf $@
 	cp -r bin/$(SOC) $@
+
+.PHONY:include/soc-cfg.h
+include/soc-mcfg.h:
+	$(PREFIX)/bin/m-cfg.sh $(CONFIG) > $@
 
 F?=hello.elf
 

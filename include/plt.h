@@ -27,6 +27,7 @@
 
 #include "lwip/netif.h"
 
+extern unsigned PLT_HZ;
 /// @return system clock
 unsigned freq_init(void);
 

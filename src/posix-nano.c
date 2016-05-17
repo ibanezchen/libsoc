@@ -2,7 +2,7 @@
 #include <hcos/task.h>
 #include <signal.h>
 
-unsigned _HZ = HZ;
+unsigned PLT_HZ = HZ;
 
 static tmr_t at;
 
