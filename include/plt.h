@@ -35,8 +35,10 @@ void plt_init(void);
 
 typedef void (*net_ipchange_t) (const struct netif * netif);
 
-void net_init(net_ipchange_t cb);
+void net_init();
 
-void dhcp_init(void);
+void ip_static();
+
+void ip_dhcp();
 
 #endif

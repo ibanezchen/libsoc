@@ -4,6 +4,9 @@
 #include <string.h>
 #include <time.h>
 
+#include <hcos/sem.h>
+
+#include "wifi_api.h"
 #include "hal_gpio.h"
 #include "syslog.h"
 #include "io_def.h"
@@ -142,8 +145,24 @@ void plt_init(void)
 	random_init();
 }
 
-void net_init(net_ipchange_t cb)
+static sem_t sem_dhcp;
+
+static void ip_change(const struct netif *netif)
 {
+	sem_post(&sem_dhcp);
+}
+
+void net_init()
+{
+	sem_init(&sem_dhcp, 0);
 	network_init();
-	wifi_register_ip_ready_callback(cb);
+	wifi_register_ip_ready_callback(ip_change);
+}
+
+void network_dhcp_start(unsigned char opmode);
+
+void ip_dhcp()
+{
+	network_dhcp_start(WIFI_MODE_STA_ONLY);
+	sem_get(&sem_dhcp, WAIT);
 }

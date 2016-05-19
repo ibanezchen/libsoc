@@ -43,7 +43,7 @@
 #define LWIP_SOCKET_STACK_SIZE  (1000/sizeof(unsigned))
 #define LWIP_SOCKET_TASK_PRIO   1
 
-static void tcp_server(void *p)
+static void tcp_server()
 {
 	int s;
 	int c;
@@ -109,11 +109,6 @@ done:
 
 }
 
-static void tcp_server_init(const struct netif *netif)
-{
-	task_new("tcp_server", tcp_server, 5, 2048, -1, 0);
-}
-
 #define xstr(s) str(s)
 #define str(s) #s
 
@@ -122,10 +117,11 @@ static void main_thread(void *p)
 	char* ssid = xstr(WIFI_SSID);
 	char* pass = xstr(WIFI_PASSWD);
 	plt_init();
-	net_init(tcp_server_init);
+	net_init();
 	_printf("wifi=%s %s\r\n", ssid, pass);
 	wifi_init(WIFI_WPA_PSK_WPA2_PSK, ssid, pass);
-	dhcp_init();
+	ip_dhcp();
+	tcp_server();
 }
 
 int main(void)

@@ -32,7 +32,16 @@
 
 #define UDIV_R(N, D, R) (((R)=(N)%(D)), ((N)/(D)))
 
-static void itoa(char **buf, unsigned i, unsigned base)
+static void _putchar(int c)
+{
+	if( c == '\r')
+		return;
+	if( c == '\n')
+		uart_put(&u0, '\r');
+	uart_put(&u0, c);
+}
+
+static void itoa(char *p, unsigned i, unsigned base)
 {
 	char rev[20 + 1];
 	char *s;
@@ -52,33 +61,27 @@ static void itoa(char **buf, unsigned i, unsigned base)
 			break;
 	}
 	if (s == &rev[20]) {
-		(*buf)[0] = '0';
-		++(*buf);
+		p[0] = '0';
+		p[1] = 0;
 		return;
 	}
 	while (*s) {
-		(*buf)[0] = *s++;
-		++(*buf);
+		p[0] = *s++;
+		++p;
 	}
+	*p = 0;
 }
 
-void _print(const char *fmt, va_list ap, char *buf, unsigned sz)
+static void _print(const char *fmt, va_list ap)
 {
-	char _buf[160];
+	char tmp[20 + 1];
 	int ival;
 	const char *p, *sval;
-	char *bp, cval;
-
-	if (!buf) {
-		buf = _buf;
-		sz = sizeof(_buf);
-	}
-	bp = buf;
-	*bp = 0;
-
+	char cval;
+	char* np;
 	for (p = fmt; *p; p++) {
 		if (*p != '%') {
-			*bp++ = *p;
+			_putchar(*p);
 			continue;
 		}
 		++p;
@@ -89,49 +92,43 @@ void _print(const char *fmt, va_list ap, char *buf, unsigned sz)
 		case 'd':
 			ival = va_arg(ap, int);
 			if (ival < 0) {
-				*bp++ = '-';
+				_putchar('-');
 				ival = -ival;
 			}
-			itoa(&bp, ival, 10);
+			itoa(tmp, ival, 10);
+			for(np = tmp; *np; )
+				_putchar(*np++);
 			break;
 		case 'u':
 		case 'U':
 		case 'x':
 		case 'X':
 			ival = va_arg(ap, int);
-			itoa(&bp, ival, 16);
+			itoa(tmp, ival, 16);
+			for(np = tmp; *np; )
+				_putchar(*np++);
 			break;
 		case 'c':
 			cval = va_arg(ap, int);
-			*bp++ = cval;
+			_putchar(cval);
 			break;
 		case 's':
 			for (sval = va_arg(ap, char *); *sval; sval++) {
-				*bp++ = *sval;
+				_putchar(*sval);
 			}
 			break;
 		default:
 			break;
 		}
 	}
-	if (bp >= buf + sz)
-		while (1) ;
-	if (_buf != buf)
-		return;
-	*bp = 0;
-	for (bp = buf; *bp; bp++) {
-		uart_put(&u0, *bp);
-	}
 }
 
 void _printf(const char *str, ...)
 {
-	if (str == 0) {
+	if (str == 0)
 		return;
-	}
-
 	va_list ap;
 	va_start(ap, str);
-	_print(str, ap, 0, 0);
+	_print(str, ap);
 	va_end(ap);
 }

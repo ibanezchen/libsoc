@@ -29,8 +29,6 @@
 #include "plt-wifi.h"
 #include <string.h>
 
-void network_dhcp_start(unsigned char opmode);
-
 void wifi_init(wifi_auth_t auth, char *ssid, char *passwd)
 {
 	unsigned char opmode = WIFI_MODE_STA_ONLY;
@@ -51,7 +49,3 @@ void wifi_init(wifi_auth_t auth, char *ssid, char *passwd)
 	}
 }
 
-void dhcp_init()
-{
-	network_dhcp_start(WIFI_MODE_STA_ONLY);
-}
