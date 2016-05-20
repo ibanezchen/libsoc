@@ -1,7 +1,7 @@
 SOC_INC=-I$(PREFIX)/include/linkit
 SOC_LIB=$(PREFIX)/bin/linkit/system_mt7687.o \
 	-lhal -llwip -lbsp -lservice -lbsp_sec -lnvram -lservice -ldhcpd \
-	-lminisupp -lsoc-linkit
+	-lminisupp libsoc-linkit.a
 
 SOC_ALL=bin/$(SOC)/startup.o startup.o hello.elf flash_rw.elf gpio_led.elf net.elf net.elf.bin
 

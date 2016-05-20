@@ -59,7 +59,7 @@ void soc_init(void)
 
 unsigned irq_mask(unsigned irq)
 {
-	if(irq == IRQ_TIME) {
+	if (irq == IRQ_TIME) {
 		cpu_stick_en(0);
 		return 1;
 	}
@@ -69,7 +69,7 @@ unsigned irq_mask(unsigned irq)
 #include "mt7687.h"
 void irq_unmask(unsigned irq)
 {
-	if(irq == IRQ_TIME) {
+	if (irq == IRQ_TIME) {
 		cpu_stick_en(1);
 		return;
 	}
@@ -96,7 +96,7 @@ void tmr_enable(int on)
 
 irq_handler(rtc_irq)
 {
-	reg(BASE_GPT+0x0) = 0x2;
+	reg(BASE_GPT + 0x0) = 0x2;
 	dbg("rtc= %x\r\n", soc_rtcs());
 	return IRQ_DONE;
 }
@@ -110,15 +110,15 @@ int tmr_init_soc(unsigned *rtcs2tick)
 	nvic_set_pri(IRQ_GPT, 5);
 	irq_init(IRQ_GPT, rtc_irq);
 	// HZ=128, gpt=1024
-	* rtcs2tick = 3;
+	*rtcs2tick = 3;
 	irq_unmask(IRQ_GPT);
 
 	//enable gpt0 for count
-	reg(BASE_GPT+0x14) = 0xffffffff;
-	reg(BASE_GPT+0x10) = 1;
+	reg(BASE_GPT + 0x14) = 0xffffffff;
+	reg(BASE_GPT + 0x10) = 1;
 
 	//enable gpt1 for interrupt
-	reg(BASE_GPT+0x04) = 2;
+	reg(BASE_GPT + 0x04) = 2;
 	return IRQ_TIME;
 }
 
@@ -130,15 +130,17 @@ unsigned soc_rtcs()
 void tmr_tickless_soc(unsigned next_expire)
 {
 	unsigned max = (0xffffffff >> 3);
-	unsigned dur = next_expire > max ? max:next_expire;
-	dbg("rtc_book= %x ++ %x %x %x\r\n", soc_rtcs(), dur<<3, max, next_expire);
-	reg(BASE_GPT+0x24) = dur<<3;
-	reg(BASE_GPT+0x20) = 0x1;
+	unsigned dur = next_expire > max ? max : next_expire;
+	dbg("rtc_book= %x ++ %x %x %x\r\n", soc_rtcs(), dur << 3, max,
+	    next_expire);
+	reg(BASE_GPT + 0x24) = dur << 3;
+	reg(BASE_GPT + 0x20) = 0x1;
 }
 
 void cache_i_inv(unsigned sta, unsigned sz)
-{}
+{
+}
 
 void cache_d_flu(unsigned sta, unsigned sz)
-{}
-
+{
+}

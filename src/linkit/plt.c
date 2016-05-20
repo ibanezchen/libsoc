@@ -18,6 +18,7 @@
 #include "hal_cache.h"
 #include "network_init.h"
 #include "plt.h"
+#include "_malloc.h"
 
 void cmnCpuClkConfigureTo192M(void);
 

@@ -38,6 +38,7 @@
 #include "_soc.h"
 #include "plt.h"
 #include "plt-wifi.h"
+#include "_malloc.h"
 
 #define PORT	80
 #define HN	"www.google.com"
@@ -46,7 +47,7 @@ unsigned buf[16], sz;
 
 static void tcp_client()
 {
-	char* get = "GET index.html\r\n";
+	char *get = "GET index.html\r\n";
 	struct sockaddr_in addr;
 	int s, r;
 	struct hostent *hp = gethostbyname(HN);
@@ -56,24 +57,23 @@ static void tcp_client()
 		return;
 	}
 	printf("%s = %s\r\n",
-		hp->h_name,
-		inet_ntoa(*(struct in_addr*)(hp -> h_addr_list[0])));
+	       hp->h_name, inet_ntoa(*(struct in_addr *)(hp->h_addr_list[0])));
 	s = socket(AF_INET, SOCK_STREAM, 0);
 	if (s < 0) {
 		printf("err socket\r\n");
-		return ;
+		return;
 	}
 
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(PORT);
-	addr.sin_addr = *(struct in_addr*)hp->h_addr_list[0];
+	addr.sin_addr = *(struct in_addr *)hp->h_addr_list[0];
 	//inet_pton(AF_INET, HOST, &addr.sin_addr);
 	sz = strlen(get);
 	memcpy(buf, get, sz);
-	if(connect(s, (const struct sockaddr *)&addr,sizeof(addr)) < 0){
+	if (connect(s, (const struct sockaddr *)&addr, sizeof(addr)) < 0) {
 		printf("err connect\r\n");
-		return ;
+		return;
 	}
 	send(s, buf, sz, 0);
 	while ((r = recv(s, buf, sizeof(buf) - 1, 0))) {
@@ -81,8 +81,8 @@ static void tcp_client()
 			printf("err recv\r\n");
 			break;
 		}
-		((char*)buf)[r] = 0;
-		printf("data: %s\r\n", (char*)buf);
+		((char *)buf)[r] = 0;
+		printf("data: %s\r\n", (char *)buf);
 	}
 	lwip_close(s);
 }
@@ -92,8 +92,9 @@ static void tcp_client()
 
 static void main_thread(void *p)
 {
-	char* ssid = xstr(WIFI_SSID);
-	char* pass = xstr(WIFI_PASSWD);
+	char *ssid = xstr(WIFI_SSID);
+	char *pass = xstr(WIFI_PASSWD);
+	malloc_init();
 	plt_init();
 	net_init();
 	_printf("wifi=%s %s\r\n", ssid, pass);
@@ -105,7 +106,7 @@ static void main_thread(void *p)
 int main(void)
 {
 	core_init();
-	task_new("init", main_thread, 8, 4096, -1, 0);
+	task_new("main", main_thread, 8, 4096, -1, 0);
 	core_start();
 	return 0;
 }

@@ -48,4 +48,3 @@ void wifi_init(wifi_auth_t auth, char *ssid, char *passwd)
 		wifi_config_reload_setting();
 	}
 }
-

@@ -38,6 +38,7 @@
 #include "_soc.h"
 #include "term.h"
 #include "free-rtos.h"
+#include "_malloc.h"
 
 #define portSTACK_TYPE	unsigned
 #define pdPASS		( 1 )
@@ -54,26 +55,26 @@ int __exidx_start, __exidx_end;
 void vPortFree(void *pv)
 {
 	dbg("free %x\r\n", (unsigned)pv);
-	free(pv);
+	_free(pv);
 }
 
 void *pvPortMalloc(size_t xWantedSize)
 {
-	void *p = malloc(xWantedSize);
+	void *p = _malloc(xWantedSize);
 	dbg("malloc %x\r\n", (unsigned)p);
 	return p;
 }
 
 void *pvPortCalloc(size_t nmemb, size_t size)
 {
-	void *p = calloc(nmemb, size);
+	void *p = _calloc(nmemb, size);
 	dbg("calloc %x\r\n", (unsigned)p);
 	return p;
 }
 
 void *pvPortRealloc(void *pv, size_t size)
 {
-	void *p = realloc(pv, size);
+	void *p = _realloc(pv, size);
 	dbg("realloc %x\r\n", (unsigned)pv);
 	return p;
 }
@@ -235,7 +236,9 @@ void vTaskPrioritySet(TaskHandle_t xTask, UBaseType_t uxNewPriority)
 
 static void gc(task_t * t)
 {
-	dbg("gc\r\n");
+	dbg("gc %s\r\n", t->name);
+	if (!strcmp(t->name, "main"))
+		return;
 	vPortFree(t->stack);
 	vPortFree(t);
 }

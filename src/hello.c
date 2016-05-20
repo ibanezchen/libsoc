@@ -33,7 +33,6 @@
 
 #include "term.h"
 
-
 static volatile float g = 3.14;
 
 void fast(void *priv)
@@ -56,7 +55,7 @@ void slow(void *priv)
 		_printf("slow %d %x\r\n", ts, soc_rtcs());
 		task_sleep(ts);
 	}
-	
+
 }
 
 irq_handler(isr_use_float)
@@ -71,7 +70,7 @@ int main(void)
 	core_init();
 	irq_init(12, isr_use_float);
 	task_new("fast", fast, 56, 1024, -1, (void *)HZ);
-	task_new("slow", slow, 56, 1024, -1, (void *)(HZ*2));
+	task_new("slow", slow, 56, 1024, -1, (void *)(HZ * 2));
 	core_start();
 	return 0;
 }

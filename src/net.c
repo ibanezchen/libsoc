@@ -36,6 +36,7 @@
 #include "_soc.h"
 #include "plt.h"
 #include "plt-wifi.h"
+#include "_malloc.h"
 
 #define SOCK_TCP_SRV_PORT        6500
 #define SOCK_UDP_SRV_PORT        6600
@@ -114,8 +115,9 @@ done:
 
 static void main_thread(void *p)
 {
-	char* ssid = xstr(WIFI_SSID);
-	char* pass = xstr(WIFI_PASSWD);
+	char *ssid = xstr(WIFI_SSID);
+	char *pass = xstr(WIFI_PASSWD);
+	malloc_init();
 	plt_init();
 	net_init();
 	_printf("wifi=%s %s\r\n", ssid, pass);
@@ -127,7 +129,7 @@ static void main_thread(void *p)
 int main(void)
 {
 	core_init();
-	task_new("init", main_thread, 8, 4096, -1, 0);
+	task_new("main", main_thread, 8, 4096, -1, 0);
 	core_start();
 	return 0;
 }

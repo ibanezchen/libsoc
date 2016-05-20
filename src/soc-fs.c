@@ -97,9 +97,15 @@ int _read(int fd, char *buf, int nbytes)
 
 void *core_alloc(unsigned sz, int align_bits);
 
+void _printf(const char *str, ...);
+
 char *_sbrk(int nbytes)
 {
 	void *p = core_alloc(nbytes, 0);
+	if ((unsigned)p > SOC_SBRK_MAX) {
+		_printf("sbrk over flow\r\n");
+		while (1) ;
+	}
 	return p;
 }
 

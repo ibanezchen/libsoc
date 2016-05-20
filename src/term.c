@@ -34,9 +34,9 @@
 
 static void _putchar(int c)
 {
-	if( c == '\r')
+	if (c == '\r')
 		return;
-	if( c == '\n')
+	if (c == '\n')
 		uart_put(&u0, '\r');
 	uart_put(&u0, c);
 }
@@ -78,7 +78,7 @@ static void _print(const char *fmt, va_list ap)
 	int ival;
 	const char *p, *sval;
 	char cval;
-	char* np;
+	char *np;
 	for (p = fmt; *p; p++) {
 		if (*p != '%') {
 			_putchar(*p);
@@ -96,7 +96,7 @@ static void _print(const char *fmt, va_list ap)
 				ival = -ival;
 			}
 			itoa(tmp, ival, 10);
-			for(np = tmp; *np; )
+			for (np = tmp; *np;)
 				_putchar(*np++);
 			break;
 		case 'u':
@@ -105,7 +105,7 @@ static void _print(const char *fmt, va_list ap)
 		case 'X':
 			ival = va_arg(ap, int);
 			itoa(tmp, ival, 16);
-			for(np = tmp; *np; )
+			for (np = tmp; *np;)
 				_putchar(*np++);
 			break;
 		case 'c':
