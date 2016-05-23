@@ -26,20 +26,9 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "uart.h"
-#include "_soc.h"
 #include "term.h"
 
 #define UDIV_R(N, D, R) (((R)=(N)%(D)), ((N)/(D)))
-
-static void _putchar(int c)
-{
-	if (c == '\r')
-		return;
-	if (c == '\n')
-		uart_put(&u0, '\r');
-	uart_put(&u0, c);
-}
 
 static void itoa(char *p, unsigned i, unsigned base)
 {
@@ -72,16 +61,18 @@ static void itoa(char *p, unsigned i, unsigned base)
 	*p = 0;
 }
 
-static void _print(const char *fmt, va_list ap)
+int _print(const char *fmt, va_list ap, _printc_f _putchar, void *priv)
 {
 	char tmp[20 + 1];
-	int ival;
+	int ival, n;
 	const char *p, *sval;
 	char cval;
 	char *np;
+	n = 0;
 	for (p = fmt; *p; p++) {
 		if (*p != '%') {
-			_putchar(*p);
+			_putchar(*p, priv);
+			n++;
 			continue;
 		}
 		++p;
@@ -92,12 +83,15 @@ static void _print(const char *fmt, va_list ap)
 		case 'd':
 			ival = va_arg(ap, int);
 			if (ival < 0) {
-				_putchar('-');
+				_putchar('-', priv);
+				n++;
 				ival = -ival;
 			}
 			itoa(tmp, ival, 10);
-			for (np = tmp; *np;)
-				_putchar(*np++);
+			for (np = tmp; *np;) {
+				_putchar(*np++, priv);
+				n++;
+			}
 			break;
 		case 'u':
 		case 'U':
@@ -105,30 +99,58 @@ static void _print(const char *fmt, va_list ap)
 		case 'X':
 			ival = va_arg(ap, int);
 			itoa(tmp, ival, 16);
-			for (np = tmp; *np;)
-				_putchar(*np++);
+			for (np = tmp; *np;) {
+				_putchar(*np++, priv);
+				n++;
+			}
 			break;
 		case 'c':
 			cval = va_arg(ap, int);
-			_putchar(cval);
+			_putchar(cval, priv);
+			n++;
 			break;
 		case 's':
 			for (sval = va_arg(ap, char *); *sval; sval++) {
-				_putchar(*sval);
+				_putchar(*sval, priv);
+				n++;
 			}
 			break;
 		default:
 			break;
 		}
 	}
+	return n;
 }
 
-void _printf(const char *str, ...)
+typedef struct {
+	char *s, *e;
+} sn_t;
+
+static void _prints(int c, void *_sn)
 {
-	if (str == 0)
-		return;
+	sn_t *sn = (sn_t *) _sn;
+	if (sn->s < sn->e) {
+		*sn->s = (char)c;
+		sn->s++;
+	}
+}
+
+int _vsnprintf(char *b, size_t sz, const char *fmt, va_list ap)
+{
+	sn_t sn;
+	sn.s = b;
+	sn.e = b + sz;
+	return _print(fmt, ap, _prints, &sn);
+}
+
+int _printf(const char *fmt, ...)
+{
+	int n;
+	if (fmt == 0)
+		return 0;
 	va_list ap;
-	va_start(ap, str);
-	_print(str, ap);
+	va_start(ap, fmt);
+	n = _vprintf(fmt, ap);
 	va_end(ap);
+	return n;
 }

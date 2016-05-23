@@ -94,7 +94,6 @@ static void main_thread(void *p)
 {
 	char *ssid = xstr(WIFI_SSID);
 	char *pass = xstr(WIFI_PASSWD);
-	malloc_init();
 	plt_init();
 	net_init();
 	_printf("wifi=%s %s\r\n", ssid, pass);

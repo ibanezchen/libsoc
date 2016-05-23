@@ -19,6 +19,8 @@
 #include "network_init.h"
 #include "plt.h"
 #include "_malloc.h"
+#include "uart.h"
+#include "_soc.h"
 
 void cmnCpuClkConfigureTo192M(void);
 
@@ -40,7 +42,6 @@ LOG_CONTROL_BLOCK_DECLARE(main);
 LOG_CONTROL_BLOCK_DECLARE(common);
 LOG_CONTROL_BLOCK_DECLARE(hal);
 LOG_CONTROL_BLOCK_DECLARE(lwip);
-LOG_CONTROL_BLOCK_DECLARE(minisupp);
 LOG_CONTROL_BLOCK_DECLARE(inband);
 
 log_control_block_t *syslog_control_blocks[] = {
@@ -48,7 +49,6 @@ log_control_block_t *syslog_control_blocks[] = {
 	&LOG_CONTROL_BLOCK_SYMBOL(common),
 	&LOG_CONTROL_BLOCK_SYMBOL(hal),
 	&LOG_CONTROL_BLOCK_SYMBOL(lwip),
-	&LOG_CONTROL_BLOCK_SYMBOL(minisupp),
 	&LOG_CONTROL_BLOCK_SYMBOL(inband),
 	NULL
 };
@@ -118,6 +118,7 @@ static int random_init(void)
 void plt_init(void)
 {
 	time_t t = 12345;
+	malloc_init((unsigned*)0x100000, 0x10000);
 	hal_lp_handle_intr();
 
 	if (cache_enable(HAL_CACHE_SIZE_32KB) < 0)
@@ -166,4 +167,19 @@ void ip_dhcp()
 {
 	network_dhcp_start(WIFI_MODE_STA_ONLY);
 	sem_get(&sem_dhcp, WAIT);
+}
+
+static void _printu(int c, void *_uart)
+{
+	uart_t *u = (uart_t *) _uart;
+	if (c == '\r')
+		return;
+	if (c == '\n')
+		uart_put(u, '\r');
+	uart_put(u, c);
+}
+
+int _vprintf(const char *fmt, va_list ap)
+{
+	return _print(fmt, ap, _printu, &u0);
 }

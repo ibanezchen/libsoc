@@ -20,7 +20,7 @@
 #include <string.h>
 #include "term.h"
 
-#define _DBG 1
+#define _DBG 0
 #define CFG_ASSERT 2
 #include <hcos/dbg.h>
 #include <hcos/mut.h>
@@ -41,8 +41,6 @@ static mut_t mut;
 static fmb_t fmb_sta, *fEnd = 0;
 
 static unsigned remaining, remaining_low;
-
-static int no_clib;
 
 static void fmb_add(fmb_t * new_fmb)
 {
@@ -78,9 +76,6 @@ void *_malloc(unsigned sz)
 {
 	void *p = 0;
 	fmb_t *fmb, *fprev, *fnew;
-
-	if (!no_clib)
-		return malloc(sz);
 
 	mut_lock(&mut, WAIT);
 	_assert(fEnd != 0);
@@ -136,10 +131,6 @@ void _free(void *p)
 {
 	fmb_t *fmb;
 
-	if (!no_clib) {
-		free(p);
-		return;
-	}
 	dbg("free %x\r\n", p);
 	if (!p)
 		return;
@@ -158,25 +149,23 @@ void _free(void *p)
 
 extern unsigned core_heap;
 
-void malloc_init(void)
+void malloc_init(unsigned *buf, unsigned sz)
 {
-	unsigned addr, total_sz, ucHeap;
+	unsigned addr, total_sz, heap;
 	fmb_t *fmb;
 	void *p;
 
-	no_clib = 1;
 	mut_init(&mut);
 
-	ucHeap = core_heap;
-	total_sz = SOC_SBRK_MAX - SOC_CLIB_RESV - ucHeap;
-	core_heap = SOC_SBRK_MAX - SOC_CLIB_RESV;
+	heap = (unsigned)buf;
+	total_sz = sz;
 
-	addr = (unsigned)ucHeap;
+	addr = (unsigned)heap;
 
 	if ((addr & MSK_ALIGN) != 0) {
 		addr += MSK_ALIGN;
 		addr &= ~MSK_ALIGN;
-		total_sz -= addr - ucHeap;
+		total_sz -= addr - heap;
 	}
 
 	p = (void *)addr;
@@ -202,8 +191,6 @@ void malloc_init(void)
 void *_calloc(unsigned n, unsigned sz)
 {
 	void *p = 0;
-	if (!no_clib)
-		return calloc(n, sz);
 	p = _malloc(n * sz);
 	if (p)
 		memset(p, 0, n * sz);
@@ -216,8 +203,6 @@ void *_realloc(void *pv, unsigned sz)
 	fmb_t *fmb = 0;
 	void *p = 0;
 
-	if (!no_clib)
-		return realloc(pv, sz);
 	p = _calloc(sz, 1);
 	if (pv) {
 		fmb = pv - sizeof(fmb_t);

@@ -58,23 +58,23 @@ void vPortFree(void *pv)
 	_free(pv);
 }
 
-void *pvPortMalloc(size_t xWantedSize)
+void *pvPortMalloc(size_t sz)
 {
-	void *p = _malloc(xWantedSize);
+	void *p = _malloc(sz);
 	dbg("malloc %x\r\n", (unsigned)p);
 	return p;
 }
 
-void *pvPortCalloc(size_t nmemb, size_t size)
+void *pvPortCalloc(size_t n, size_t sz)
 {
-	void *p = _calloc(nmemb, size);
+	void *p = _calloc(n, sz);
 	dbg("calloc %x\r\n", (unsigned)p);
 	return p;
 }
 
-void *pvPortRealloc(void *pv, size_t size)
+void *pvPortRealloc(void *pv, size_t sz)
 {
-	void *p = _realloc(pv, size);
+	void *p = _realloc(pv, sz);
 	dbg("realloc %x\r\n", (unsigned)pv);
 	return p;
 }

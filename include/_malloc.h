@@ -9,6 +9,6 @@ void *_calloc(unsigned n, unsigned sz);
 
 void *_realloc(void *pv, unsigned sz);
 
-void malloc_init();
+void malloc_init(unsigned *buf, unsigned sz);
 
 #endif

@@ -15,7 +15,6 @@ MOPTS  :=$(COPTS) \
 	-ffunction-sections -fdata-sections -fshort-enums
 BAUD?=230400
 CONFIG :=-DHZ=128 -DHC=1 -DSOC_SBRK_MAX=0x20040000 \
-	-DSOC_CLIB_RESV=0x400 \
 	-DWIFI_SSID=$(WIFI_SSID) -DWIFI_PASSWD=$(WIFI_PASSWD)
 ASFLAGS:=$(MOPTS) $(CONFIG) -O2 -g -Wall -Werror -D __ASSEMBLY__
 CFLAGS :=$(MOPTS) $(CONFIG) -O2 -g -Wall -Werror
