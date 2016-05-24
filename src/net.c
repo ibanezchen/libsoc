@@ -36,7 +36,6 @@
 #include "_soc.h"
 #include "plt.h"
 #include "plt-wifi.h"
-#include "_malloc.h"
 
 #define SOCK_TCP_SRV_PORT        6500
 #define SOCK_UDP_SRV_PORT        6600

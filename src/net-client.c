@@ -38,7 +38,6 @@
 #include "_soc.h"
 #include "plt.h"
 #include "plt-wifi.h"
-#include "_malloc.h"
 
 #define PORT	80
 #define HN	"www.google.com"

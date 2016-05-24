@@ -26,10 +26,13 @@
 #define PLT0419
 
 #include "lwip/netif.h"
+#include "heap-mem.h"
 
 extern unsigned PLT_HZ;
 /// @return system clock
 unsigned freq_init(void);
+
+extern heap_t plt_tcm;
 
 void plt_init(void);
 

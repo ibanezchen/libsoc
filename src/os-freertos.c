@@ -38,7 +38,8 @@
 #include "_soc.h"
 #include "term.h"
 #include "free-rtos.h"
-#include "_malloc.h"
+#include "heap-mem.h"
+#include "plt.h"
 
 #define portSTACK_TYPE	unsigned
 #define pdPASS		( 1 )
@@ -52,30 +53,32 @@
 
 int __exidx_start, __exidx_end;
 
-void vPortFree(void *pv)
+void vPortFree(void *p)
 {
 	dbg("free %x\r\n", (unsigned)pv);
-	_free(pv);
+	heap_free(&plt_tcm, p);
 }
 
 void *pvPortMalloc(size_t sz)
 {
-	void *p = _malloc(sz);
+	void *p = heap_alloc(&plt_tcm, sz);
 	dbg("malloc %x\r\n", (unsigned)p);
 	return p;
 }
 
 void *pvPortCalloc(size_t n, size_t sz)
 {
-	void *p = _calloc(n, sz);
-	dbg("calloc %x\r\n", (unsigned)p);
+	void *p = 0;
+	p = heap_alloc(&plt_tcm, n * sz);
+	if (p)
+		memset(p, 0, n * sz);
 	return p;
 }
 
 void *pvPortRealloc(void *pv, size_t sz)
 {
-	void *p = _realloc(pv, sz);
-	dbg("realloc %x\r\n", (unsigned)pv);
+	void *p = heap_realloc(&plt_tcm, pv, sz);
+	dbg("realloc %x\r\n", (unsigned)p);
 	return p;
 }
 

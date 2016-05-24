@@ -18,9 +18,10 @@
 #include "hal_cache.h"
 #include "network_init.h"
 #include "plt.h"
-#include "_malloc.h"
+#include "heap-mem.h"
 #include "uart.h"
 #include "_soc.h"
+#include "plt.h"
 
 void cmnCpuClkConfigureTo192M(void);
 
@@ -115,10 +116,14 @@ static int random_init(void)
 	return 0;
 }
 
+static mut_t tcm_mut;
+
+heap_t plt_tcm;
+
 void plt_init(void)
 {
-	time_t t = 12345;
-	malloc_init((unsigned*)0x100000, 0x10000);
+	mut_init(&tcm_mut);
+	heap_init(&plt_tcm, (unsigned *)BASE_TCM, 0x10000, &tcm_mut);
 	hal_lp_handle_intr();
 
 	if (cache_enable(HAL_CACHE_SIZE_32KB) < 0)
@@ -143,7 +148,6 @@ void plt_init(void)
 	hal_pinmux_set_function(HAL_GPIO_39, 7);
 
 	log_init(syslog_config_save, syslog_config_load, syslog_control_blocks);
-	ctime(&t);
 	random_init();
 }
 
