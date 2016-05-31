@@ -22,11 +22,11 @@
 /*-             http://socware.net                                            */
 /*-                                                                           */
 /*-****************************************************************************/
+#if _EXE_
+
 #include <hcos/test.h>
 #include <hcos/core.h>
 #include <hcos/cpu/nvic.h>
-
-#if _EXE_
 
 int main(void)
 {

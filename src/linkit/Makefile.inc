@@ -1,5 +1,5 @@
-SOC_INC=-I$(PREFIX)/include/linkit
-SOC_LIB=$(PREFIX)/bin/linkit/system_mt7687.o \
+SOC_INC=-Iinclude/linkit -I$(PREFIX)/include/linkit
+SOC_LIB=bin/linkit/system_mt7687.o \
 	-lhal -llwip -lbsp -lservice -lbsp_sec -lnvram -lservice -ldhcpd \
 	-lminisupp libsoc-linkit.a
 
