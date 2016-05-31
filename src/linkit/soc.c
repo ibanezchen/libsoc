@@ -51,6 +51,11 @@ unsigned freq_init()
 	return top_xtal_freq_get();
 }
 
+void soc_idle(int next_expire)
+{
+	cpu_idle();
+}
+
 void soc_init(void)
 {
 	freq = freq_init();
