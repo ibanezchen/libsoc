@@ -33,3 +33,9 @@ unsigned int sleep(unsigned int seconds)
 	task_sleep(seconds * HZ);
 	return 0;
 }
+
+int nanosleep(const struct timespec *req, struct timespec *rem)
+{
+	//FIXME:
+	return 0;
+}
