@@ -19,8 +19,8 @@ CONFIG :=-DHZ=128 -DHC=1 -DSOC_SBRK_MAX=0x20040000 \
 ASFLAGS:=$(MOPTS) $(CONFIG) -O2 -g -Wall -Werror -D __ASSEMBLY__
 CFLAGS :=$(MOPTS) $(CONFIG) -O2 -g -Wall -Werror
 LSCRIPT?=rom.ld
-LDFLAGS:=$(MOPTS) -g -nostartfiles -nodefaultlibs -L$(PREFIX)/lib -L . -Tbin/$(SOC)/$(LSCRIPT)
-LDFLAGS+= -Wl,--start-group -lhcos -lc -lgcc $(SOC_LIB) -Wl,--end-group
+LDFLAGS:=$(MOPTS) -g -nostartfiles -nodefaultlibs -L . -L$(PREFIX)/lib -Tbin/$(SOC)/$(LSCRIPT)
+LDFLAGS+= -Wl,--start-group -lhcos -lc -lgcc $(SOC_LIB) -Wl,--end-group -Wl,--gc-sections
 
 MSCRIPT:=$(PREFIX)/share/mod.ld
 LIB    :=lib$(NAME).a
