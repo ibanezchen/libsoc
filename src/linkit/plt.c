@@ -187,3 +187,30 @@ int _vprintf(const char *fmt, va_list ap)
 {
 	return _print(fmt, ap, _printu, &u0);
 }
+
+int main(int argc, char** argv);
+
+int _main(void)
+{
+	char* s, *d, *h;
+	int i, l, argc = 0;
+	char** argv = 0;
+
+	h = (char *)(BASE_SRAM + (256 << 10) - 256);
+	if(*(unsigned*)h == 0xBEEFBEEF){
+		h += 4;
+		for(s = h; *s; ) {
+			l = strlen(s);
+			d = core_alloc(l+1, 0);
+			strcpy(d, s);
+			s += (l + 1);
+			argc ++;
+		}
+		argv = (char**)core_alloc(sizeof(char*)*argc, 2);
+		i = 0;
+		for(s = h; *s; s+=strlen(s)+1)
+			argv[i++] = s;
+		argv[i] = 0;
+	}
+	return main(argc, argv);
+}

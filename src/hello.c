@@ -65,9 +65,12 @@ irq_handler(isr_use_float)
 }
 
 #if _EXE_
-int main(void)
+int main(int argc, char** argv)
 {
+	int i;
 	core_init();
+	for( i = 0 ; i < argc; i++)
+		printf("argv[%d] = %s\r\n", i, argv[i]);
 	irq_init(12, isr_use_float);
 	task_new("fast", fast, 56, 1024, -1, (void *)HZ);
 	task_new("slow", slow, 56, 1024, -1, (void *)(HZ * 2));
