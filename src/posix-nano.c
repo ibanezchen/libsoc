@@ -1,6 +1,7 @@
 #include <hcos/tmr.h>
 #include <hcos/task.h>
 #include <signal.h>
+#include <string.h>
 
 unsigned PLT_HZ = HZ;
 
@@ -38,4 +39,14 @@ int nanosleep(const struct timespec *req, struct timespec *rem)
 {
 	//FIXME:
 	return 0;
+}
+
+int daemon(int a, int b)
+{
+	return 0;
+}
+
+void gethostname(char* b, int sz)
+{
+	strncpy(b, "hc", sz);
 }
