@@ -158,10 +158,10 @@ static void ip_change(const struct netif *netif)
 	sem_post(&sem_dhcp);
 }
 
-void net_init()
+void net_init(char **mac_addrs)
 {
 	sem_init(&sem_dhcp, 0);
-	network_init();
+	network_init(mac_addrs);
 	wifi_register_ip_ready_callback(ip_change);
 }
 
@@ -188,27 +188,27 @@ int _vprintf(const char *fmt, va_list ap)
 	return _print(fmt, ap, _printu, &u0);
 }
 
-int main(int argc, char** argv);
+int main(int argc, char **argv);
 
 int _main(void)
 {
-	char* s, *d, *h;
+	char *s, *d, *h;
 	int i, l, argc = 0;
-	char** argv = 0;
+	char **argv = 0;
 
 	h = (char *)(BASE_SRAM + (256 << 10) - 256);
-	if(*(unsigned*)h == 0xBEEFBEEF){
+	if (*(unsigned *)h == 0xBEEFBEEF) {
 		h += 4;
-		for(s = h; *s; ) {
+		for (s = h; *s;) {
 			l = strlen(s);
-			d = core_alloc(l+1, 0);
+			d = core_alloc(l + 1, 0);
 			strcpy(d, s);
 			s += (l + 1);
-			argc ++;
+			argc++;
 		}
-		argv = (char**)core_alloc(sizeof(char*)*argc, 2);
+		argv = (char **)core_alloc(sizeof(char *) * argc, 2);
 		i = 0;
-		for(s = h; *s; s+=strlen(s)+1)
+		for (s = h; *s; s += strlen(s) + 1)
 			argv[i++] = s;
 		argv[i] = 0;
 	}

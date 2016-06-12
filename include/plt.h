@@ -38,7 +38,7 @@ void plt_init(void);
 
 typedef void (*net_ipchange_t) (const struct netif * netif);
 
-void net_init();
+void net_init(char **mac_addr);
 
 void ip_static();
 

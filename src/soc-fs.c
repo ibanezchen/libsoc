@@ -121,7 +121,7 @@ int _unlink(const char *pathname)
 	return -1;
 }
 
-clock_t _times(struct tms *buf)
+clock_t _times(struct tms * buf)
 {
 	memset(buf, 0, sizeof(struct tms));
 	return 0;

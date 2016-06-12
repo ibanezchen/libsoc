@@ -46,7 +46,7 @@ int daemon(int a, int b)
 	return 0;
 }
 
-void gethostname(char* b, int sz)
+void gethostname(char *b, int sz)
 {
 	strncpy(b, "hc", sz);
 }
