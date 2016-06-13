@@ -32,7 +32,7 @@ _start:
 	ldr sp, = _stack
 	ldr r0,= _init
 	blx r0
-	ldr r0,= main
+	ldr r0,= _main
 	blx r0
 2:
 	b		2b

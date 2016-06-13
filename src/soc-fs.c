@@ -25,8 +25,10 @@
 
 #include "_soc.h"
 #include <unistd.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/times.h>
 
 int _close(int fd)
 {
@@ -117,4 +119,10 @@ int _rename(const char *oldpath, const char *newpath)
 int _unlink(const char *pathname)
 {
 	return -1;
+}
+
+clock_t _times(struct tms * buf)
+{
+	memset(buf, 0, sizeof(struct tms));
+	return 0;
 }

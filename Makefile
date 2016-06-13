@@ -53,7 +53,11 @@ include/soc-mcfg.h:
 
 F?=hello.elf
 
-ddd:$(F)
+openocd.gdb:
+	echo target remote 127.0.0.1:3333 > $@
+	echo monitor reset init>> $@
+
+ddd:openocd.gdb $(F)
 	ddd --debugger $(CROSS)gdb -x openocd.gdb $(F)
 	
 ddd-attach:

@@ -117,7 +117,7 @@ static void main_thread(void *p)
 	char *ssid = xstr(WIFI_SSID);
 	char *pass = xstr(WIFI_PASSWD);
 	plt_init();
-	net_init();
+	net_init(0);
 	_printf("wifi=%s %s\r\n", ssid, pass);
 	wifi_init(WIFI_WPA_PSK_WPA2_PSK, ssid, pass);
 	ip_dhcp();
