@@ -199,6 +199,7 @@ int _main(void)
 	h = (char *)(BASE_SRAM + (256 << 10) - 256);
 	if (*(unsigned *)h == 0xBEEFBEEF) {
 		h += 4;
+		argc = 1;
 		for (s = h; *s;) {
 			l = strlen(s);
 			d = core_alloc(l + 1, 0);
@@ -208,6 +209,7 @@ int _main(void)
 		}
 		argv = (char **)core_alloc(sizeof(char *) * argc, 2);
 		i = 0;
+		argv[i++] = "app";
 		for (s = h; *s; s += strlen(s) + 1)
 			argv[i++] = s;
 		argv[i] = 0;
