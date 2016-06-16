@@ -270,8 +270,10 @@ BaseType_t xTaskGenericCreate(TaskFunction_t pxTaskCode,
 		task_gc = gc;
 	t = pvPortMalloc(sizeof(task_t));
 	stack_sz = sizeof(StackType_t) * usStackDepth;
-	if (puxStackBuffer == 0) ;
-	puxStackBuffer = pvPortMalloc(stack_sz);
+	if (puxStackBuffer == 0) {
+		void* p = pvPortMalloc(stack_sz + 7);
+		puxStackBuffer = (void*)((unsigned)p & ~0x7);
+	}
 	pri = uxPriority * 2 + 5;
 	dbg("xTaskGenericCreate %s %d %x\r\n", pcName, pri,
 	    (unsigned)pxTaskCode);
