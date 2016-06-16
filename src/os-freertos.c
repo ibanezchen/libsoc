@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "os_util.h"
 #include "_soc.h"
 #include "term.h"
 #include "free-rtos.h"
