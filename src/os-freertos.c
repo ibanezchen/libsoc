@@ -202,7 +202,7 @@ UBaseType_t uxQueueMessagesWaiting(const QueueHandle_t xQueue)
 void vTaskDelay(const unsigned xTicksToDelay)
 {
 	dbg("%s vTaskDelay %d\r\n", _task_cur->name, xTicksToDelay);
-	task_sleep(xTicksToDelay);
+	task_sleep(xTicksToDelay/(1024/HZ));
 }
 
 char *pcTaskGetTaskName(void *_task)
