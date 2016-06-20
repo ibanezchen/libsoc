@@ -29,15 +29,21 @@ unsigned alarm(unsigned seconds)
 	return remaining;
 }
 
-unsigned int sleep(unsigned int seconds)
+unsigned int sleep(unsigned int secs)
 {
-	task_sleep(seconds * HZ);
+	task_sleep(secs * HZ);
 	return 0;
 }
 
 int nanosleep(const struct timespec *req, struct timespec *rem)
 {
-	//FIXME:
+	unsigned ticks;
+	ticks = (req->tv_sec*HZ) + (req->tv_nsec*HZ)/1000000000;
+	task_sleep(ticks);
+	if(rem){
+		rem->tv_sec = 0;
+		rem->tv_nsec= 0;
+	}
 	return 0;
 }
 
