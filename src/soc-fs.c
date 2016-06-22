@@ -52,7 +52,7 @@ int _getpid(void)
 
 int _gettimeofday(void *tp, void *tzp)
 {
-	return -1;
+	return 0;
 }
 
 int _isatty(int fd)

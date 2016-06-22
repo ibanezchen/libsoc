@@ -44,6 +44,7 @@ void ip_static();
 
 void ip_dhcp();
 
-#define PRINTF_FLOAT	asm (".global _printf_float")
+#define PRINTF_FLOAT	asm (".global _printf_float");
+#define SCANF_FLOAT	asm (".global _scanf_float");
 
 #endif
