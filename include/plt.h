@@ -25,7 +25,7 @@
 #ifndef PLT0419
 #define PLT0419
 
-#include "lwip/netif.h"
+#include <lwip/netif.h>
 #include "heap-mem.h"
 
 extern unsigned PLT_HZ;
@@ -40,11 +40,11 @@ typedef void (*net_ipchange_t) (const struct netif * netif);
 
 void net_init(char **mac_addr);
 
-void ip_static();
+void ip_static(char *ip, char *msk, char *gw);
 
 void ip_dhcp();
 
-#define PRINTF_FLOAT	asm (".global _printf_float");
-#define SCANF_FLOAT	asm (".global _scanf_float");
+#define PRINTF_FLOAT	asm (".global _printf_float")
+#define SCANF_FLOAT	asm (".global _scanf_float")
 
 #endif

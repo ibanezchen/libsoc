@@ -151,21 +151,43 @@ void plt_init(void)
 	random_init();
 }
 
-static sem_t sem_dhcp;
+static sem_t sem_dhcp, sem_wifi;
 
 static void ip_change(const struct netif *netif)
 {
 	sem_post(&sem_dhcp);
 }
 
+static int32_t wifi_connected(wifi_event_t event, uint8_t * payload,
+			      uint32_t length)
+{
+	sem_post(&sem_wifi);
+	return 1;
+}
+
 void net_init(char **mac_addrs)
 {
 	sem_init(&sem_dhcp, 0);
+	sem_init(&sem_wifi, 0);
 	network_init(mac_addrs);
 	wifi_register_ip_ready_callback(ip_change);
+	wifi_connection_register_event_notifier(WIFI_EVENT_IOT_CONNECTED,
+						wifi_connected);
 }
 
 void network_dhcp_start(unsigned char opmode);
+
+extern struct netif sta_if;
+
+void ip_static(char *_ip, char *_msk, char *_gw)
+{
+	ip4_addr_t ip, msk, gw;
+	sem_get(&sem_wifi, WAIT);
+	ip.addr = ipaddr_addr(_ip);
+	msk.addr = ipaddr_addr(_msk);
+	gw.addr = ipaddr_addr(_gw);
+	netif_set_addr(&sta_if, &ip, &msk, &gw);
+}
 
 void ip_dhcp()
 {

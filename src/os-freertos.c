@@ -201,7 +201,7 @@ UBaseType_t uxQueueMessagesWaiting(const QueueHandle_t xQueue)
 void vTaskDelay(const unsigned xTicksToDelay)
 {
 	dbg("%s vTaskDelay %d\r\n", _task_cur->name, xTicksToDelay);
-	task_sleep(xTicksToDelay/(1024/HZ));
+	task_sleep(xTicksToDelay / (1024 / HZ));
 }
 
 char *pcTaskGetTaskName(void *_task)
@@ -271,8 +271,8 @@ BaseType_t xTaskGenericCreate(TaskFunction_t pxTaskCode,
 	t = pvPortMalloc(sizeof(task_t));
 	stack_sz = sizeof(StackType_t) * usStackDepth;
 	if (puxStackBuffer == 0) {
-		void* p = pvPortMalloc(stack_sz + 7);
-		puxStackBuffer = (void*)((unsigned)p & ~0x7);
+		void *p = pvPortMalloc(stack_sz + 7);
+		puxStackBuffer = (void *)((unsigned)p & ~0x7);
 	}
 	pri = uxPriority * 2 + 5;
 	dbg("xTaskGenericCreate %s %d %x\r\n", pcName, pri,

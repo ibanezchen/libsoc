@@ -29,10 +29,10 @@
 #include <hcos/soc.h>
 #include <string.h>
 
-#include "lwip/netif.h"
-#include "lwip/tcpip.h"
-#include "lwip/sockets.h"
-#include "lwip/netdb.h"
+#include <lwip/netif.h>
+#include <lwip/tcpip.h>
+#include <lwip/sockets.h>
+#include <lwip/netdb.h>
 
 #include "term.h"
 #include "_soc.h"
@@ -93,14 +93,18 @@ static void main_thread(void *p)
 {
 	char *m0 = "00:0c:43:76:87:22";
 	char *m1 = "00:0c:43:76:87:24";
-	char *mac_addrs[] = { m0, m1, 0};
+	char *mac_addrs[] = { m0, m1, 0 };
 	char *ssid = xstr(WIFI_SSID);
 	char *pass = xstr(WIFI_PASSWD);
 	plt_init();
 	net_init(mac_addrs);
 	_printf("wifi=%s %s\r\n", ssid, pass);
 	wifi_init(WIFI_WPA_PSK_WPA2_PSK, ssid, pass);
+#if !DHCP
+	ip_static("192.168.1.29", "255.255.255.0", "192.168.1.1");
+#else
 	ip_dhcp();
+#endif
 	tcp_client();
 }
 

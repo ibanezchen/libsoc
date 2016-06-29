@@ -28,10 +28,9 @@
 #include <hcos/task.h>
 #include <hcos/soc.h>
 #include <string.h>
-
-#include "lwip/netif.h"
-#include "lwip/tcpip.h"
-#include "lwip/sockets.h"
+#include <lwip/netif.h>
+#include <lwip/tcpip.h>
+#include <lwip/sockets.h>
 #include "term.h"
 #include "_soc.h"
 #include "plt.h"

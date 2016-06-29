@@ -38,11 +38,11 @@ unsigned int sleep(unsigned int secs)
 int nanosleep(const struct timespec *req, struct timespec *rem)
 {
 	unsigned ticks;
-	ticks = (req->tv_sec*HZ) + (req->tv_nsec*HZ)/1000000000;
+	ticks = (req->tv_sec * HZ) + (req->tv_nsec * HZ) / 1000000000;
 	task_sleep(ticks);
-	if(rem){
+	if (rem) {
 		rem->tv_sec = 0;
-		rem->tv_nsec= 0;
+		rem->tv_nsec = 0;
 	}
 	return 0;
 }
