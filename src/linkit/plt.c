@@ -3,8 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <stdarg.h>
 
 #include <hcos/sem.h>
+#include <lwip/err.h>
+#include <lwip/dns.h>
 
 #include "wifi_api.h"
 #include "hal_gpio.h"
@@ -165,11 +168,25 @@ static int32_t wifi_connected(wifi_event_t event, uint8_t * payload,
 	return 1;
 }
 
-void net_init(char **mac_addrs)
+static char *mac_addrs[MAC_MAX + 1];
+
+void net_init(char *mac_addr, ...)
 {
+	int i;
+	char *s;
+	va_list vl;
 	sem_init(&sem_dhcp, 0);
 	sem_init(&sem_wifi, 0);
-	network_init(mac_addrs);
+	if (mac_addr) {
+		mac_addrs[0] = mac_addr;
+		va_start(vl, mac_addr);
+		for (i = 1; i < MAC_MAX && (s = va_arg(vl, char *)); i++)
+			mac_addrs[i] = s;
+		va_end(vl);
+		network_init(mac_addrs);
+	}else{
+		network_init(0);
+	}
 	wifi_register_ip_ready_callback(ip_change);
 	wifi_connection_register_event_notifier(WIFI_EVENT_IOT_CONNECTED,
 						wifi_connected);
@@ -179,14 +196,16 @@ void network_dhcp_start(unsigned char opmode);
 
 extern struct netif sta_if;
 
-void ip_static(char *_ip, char *_msk, char *_gw)
+void ip_static(char *_ip, char *_msk, char *_gw, char *_dns)
 {
-	ip4_addr_t ip, msk, gw;
+	ip4_addr_t ip, msk, gw, dns;
 	sem_get(&sem_wifi, WAIT);
 	ip.addr = ipaddr_addr(_ip);
 	msk.addr = ipaddr_addr(_msk);
 	gw.addr = ipaddr_addr(_gw);
+	dns.addr = ipaddr_addr(_dns);
 	netif_set_addr(&sta_if, &ip, &msk, &gw);
+	dns_setserver(0, &dns);
 }
 
 void ip_dhcp()

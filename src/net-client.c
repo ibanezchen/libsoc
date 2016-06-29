@@ -91,17 +91,16 @@ static void tcp_client()
 
 static void main_thread(void *p)
 {
-	char *m0 = "00:0c:43:76:87:22";
-	char *m1 = "00:0c:43:76:87:24";
-	char *mac_addrs[] = { m0, m1, 0 };
 	char *ssid = xstr(WIFI_SSID);
 	char *pass = xstr(WIFI_PASSWD);
+
 	plt_init();
-	net_init(mac_addrs);
-	_printf("wifi=%s %s\r\n", ssid, pass);
+	net_init(0);
+	printf("wifi=%s %s\r\n", ssid, pass);
 	wifi_init(WIFI_WPA_PSK_WPA2_PSK, ssid, pass);
 #if !DHCP
-	ip_static("192.168.1.29", "255.255.255.0", "192.168.1.1");
+//      ip_static("192.168.1.29", "255.255.255.0", "192.168.1.1", "8.8.8.8");
+	ip_static("192.168.43.206", "255.255.255.0", "192.168.43.1", "8.8.8.8");
 #else
 	ip_dhcp();
 #endif

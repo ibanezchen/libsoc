@@ -27,6 +27,7 @@
 
 #include <lwip/netif.h>
 #include "heap-mem.h"
+#include "sntp.h"
 
 extern unsigned PLT_HZ;
 /// @return system clock
@@ -38,11 +39,15 @@ void plt_init(void);
 
 typedef void (*net_ipchange_t) (const struct netif * netif);
 
-void net_init(char **mac_addr);
+void net_init(char *mac_addr, ...);
 
-void ip_static(char *ip, char *msk, char *gw);
+void ip_static(char *ip, char *msk, char *gw, char *dns);
 
 void ip_dhcp();
+
+void _settime(long ts);
+
+#define plt_sntp(_servers...)		sntp_init(_settime, ##_servers, 0)
 
 #define PRINTF_FLOAT	asm (".global _printf_float")
 #define SCANF_FLOAT	asm (".global _scanf_float")

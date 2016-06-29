@@ -29,6 +29,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/times.h>
+#include <sys/time.h>
+#include <hcos/tmr.h>
 
 int _close(int fd)
 {
@@ -50,8 +52,17 @@ int _getpid(void)
 	return 1;
 }
 
-int _gettimeofday(void *tp, void *tzp)
+static unsigned toff;
+
+void _settime(long ts)
 {
+	toff = ts - (long)(tmr_ticks / HZ);
+}
+
+int _gettimeofday(struct timeval *tp, void *tzp)
+{
+	tp->tv_sec = toff + (long)(tmr_ticks / HZ);
+	tp->tv_usec = 0;
 	return 0;
 }
 
