@@ -22,13 +22,13 @@
 /*-             http://socware.net                                            */
 /*-                                                                           */
 /*-****************************************************************************/
-#ifndef ADC160502
-#define ADC160502
+#ifndef WDOG062088
+#define WDOG062088
 
-void adc_init();
+void wdog_start(unsigned ticks_dead, unsigned ticks_toggle);
 
-int adc_get(int pin);
+void wdog_reset(unsigned ticks_dead);
 
-int adc_set(int pin, int v);
+void wdog_stop();
 
-#
+#endif

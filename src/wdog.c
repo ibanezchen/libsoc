@@ -22,13 +22,22 @@
 /*-             http://socware.net                                            */
 /*-                                                                           */
 /*-****************************************************************************/
-#ifndef ADC160502
-#define ADC160502
+#include "wdog.h"
+#include <hcos/tmr.h>
 
-void adc_init();
+static unsigned ticks_dead, ticks_toggle;
 
-int adc_get(int pin);
+static tmr_t tmr_wd;
 
-int adc_set(int pin, int v);
+static int _reset(void *p)
+{
+	wdog_reset(ticks_dead);
+	return (int)ticks_toggle;
+}
 
-#
+void wdog_start(unsigned _ticks_dead, unsigned _ticks_toggle)
+{
+	ticks_dead = _ticks_dead;
+	ticks_toggle = _ticks_toggle;
+	tmr_init(&tmr_wd, 0, _reset);
+}
