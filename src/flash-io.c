@@ -4,26 +4,27 @@
 #include <hcos/soc.h>
 #include <string.h>
 #include <stdio.h>
-#include "hal_flash.h"
 #include "term.h"
+#include "flash.h"
 
 char *data = "1234567890abcdef";
 unsigned char buf[16];
 
-static void flash_rw(void *priv)
+static void flash_io(void *priv)
 {
-	hal_flash_init();
-	hal_flash_erase(0, HAL_FLASH_BLOCK_4K);
-	hal_flash_write(0, (void *)data, 16);
+	unsigned tar = 1 << 20;
+	_flash_init();
+	_flash_erase(tar, flash_page);
+	_flash_write(tar, 16, (void *)data);
 	memset(buf, 0, sizeof(buf));
-	hal_flash_read(0, buf, sizeof(buf));
+	_flash_read(tar, sizeof(buf), buf);
 	_printf("buf %s\n", buf);
 }
 
 int main(void)
 {
 	core_init();
-	task_new("flash_rw", flash_rw, 56, 1024, -1, (void *)50);
+	task_new("flash_io", flash_io, 56, 2048, -1, 0);
 	core_start();
 	return 0;
 }

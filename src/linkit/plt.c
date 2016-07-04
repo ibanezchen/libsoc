@@ -184,7 +184,7 @@ void net_init(char *mac_addr, ...)
 			mac_addrs[i] = s;
 		va_end(vl);
 		network_init(mac_addrs);
-	}else{
+	} else {
 		network_init(0);
 	}
 	wifi_register_ip_ready_callback(ip_change);
@@ -212,6 +212,17 @@ void ip_dhcp()
 {
 	network_dhcp_start(WIFI_MODE_STA_ONLY);
 	sem_get(&sem_dhcp, WAIT);
+}
+
+void pinmux(unsigned p, unsigned f)
+{
+	unsigned r;
+	unsigned addr = BASE_PINMUX + 0x20 + ((p >> 3) * 4);
+	unsigned lsb = (p & 0x7) * 4;
+	r = reg(addr);
+	r &= ~(0x7 << lsb);
+	r |= (f & 0x7) << lsb;
+	reg(addr) = r;
 }
 
 static void _printu(int c, void *_uart)

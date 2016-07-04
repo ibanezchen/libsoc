@@ -22,36 +22,17 @@
 /*-             http://socware.net                                            */
 /*-                                                                           */
 /*-****************************************************************************/
-#ifndef PLT0419
-#define PLT0419
+#ifndef FLASH0322
+#define FLASH0322
 
-#include <lwip/netif.h>
-#include "heap-mem.h"
-#include "sntp.h"
+extern unsigned flash_page, flash_sz, flash_align, flash_off;
 
-extern unsigned PLT_HZ;
-/// @return system clock
-unsigned freq_init(void);
+void _flash_init(void);
 
-extern heap_t plt_tcm;
+int _flash_erase(unsigned off, unsigned sz);
 
-void plt_init(void);
+int _flash_write(unsigned off, unsigned sz, void *data);
 
-void pinmux(unsigned p, unsigned f);
-
-typedef void (*net_ipchange_t) (const struct netif * netif);
-
-void net_init(char *mac_addr, ...);
-
-void ip_static(char *ip, char *msk, char *gw, char *dns);
-
-void ip_dhcp();
-
-void _settime(long ts);
-
-#define plt_sntp(_servers...)		sntp_init(_settime, ##_servers, 0)
-
-#define PRINTF_FLOAT	asm (".global _printf_float")
-#define SCANF_FLOAT	asm (".global _scanf_float")
+int _flash_read(unsigned off, unsigned sz, void *data);
 
 #endif
