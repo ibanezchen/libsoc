@@ -106,7 +106,7 @@ irq_handler(rtc_irq)
 	return IRQ_DONE;
 }
 
-int tmr_init_soc(unsigned *rtcs2tick)
+int tmr_init_soc(unsigned *rtcs2tick, unsigned *hz)
 {
 	cpu_stick_init(freq / HZ);
 	//set Priority for Systick Interrupt
@@ -124,6 +124,7 @@ int tmr_init_soc(unsigned *rtcs2tick)
 
 	//enable gpt1 for interrupt
 	reg(BASE_GPT + 0x04) = 2;
+	*hz = HZ;
 	return IRQ_TIME;
 }
 

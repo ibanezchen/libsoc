@@ -3,8 +3,6 @@
 #include <signal.h>
 #include <string.h>
 
-unsigned PLT_HZ = HZ;
-
 static tmr_t at;
 
 static unsigned alarm_ticks;
