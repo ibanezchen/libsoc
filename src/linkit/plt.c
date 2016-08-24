@@ -26,10 +26,6 @@
 #include "_soc.h"
 #include "plt.h"
 
-void cmnCpuClkConfigureTo192M(void);
-
-void cmnSerialFlashClkConfTo64M(void);
-
 void hal_lp_handle_intr();
 
 void netbuf_destport(void *a)
@@ -131,12 +127,6 @@ void plt_init(void)
 
 	if (cache_enable(HAL_CACHE_SIZE_32KB) < 0)
 		_printf("cache enable failed");
-
-	// Enable MCU clock to 192MHz
-	cmnCpuClkConfigureTo192M();
-
-	//Enable flash clock to 64MHz
-	cmnSerialFlashClkConfTo64M();
 
 	// Set Pinmux to UART0
 	hal_pinmux_set_function(0, 7);

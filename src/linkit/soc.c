@@ -41,6 +41,10 @@ void top_xtal_init(void);
 
 unsigned top_xtal_freq_get(void);
 
+void cmnCpuClkConfigureTo192M(void);
+
+void cmnSerialFlashClkConfTo64M(void);
+
 uart_t u0;
 
 static unsigned freq;
@@ -48,7 +52,14 @@ static unsigned freq;
 unsigned freq_init()
 {
 	top_xtal_init();
-	return top_xtal_freq_get();
+	// Enable MCU clock to 192MHz
+	cmnCpuClkConfigureTo192M();
+
+	//Enable flash clock to 64MHz
+	cmnSerialFlashClkConfTo64M();
+
+	return 192 * 1000000;
+//	return top_xtal_freq_get();
 }
 
 void soc_idle(int next_expire)
