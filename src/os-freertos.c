@@ -274,7 +274,7 @@ BaseType_t xTaskGenericCreate(TaskFunction_t pxTaskCode,
 		void *p = pvPortMalloc(stack_sz + 7);
 		puxStackBuffer = (void *)((unsigned)p & ~0x7);
 	}
-	pri = CFG_TPRI_NUM - 10 -(uxPriority * 2 + 5);
+	pri = CFG_TPRI_NUM - 10 - (uxPriority * 2 + 5);
 	dbg("xTaskGenericCreate %s %d %x\r\n", pcName, pri,
 	    (unsigned)pxTaskCode);
 	*pxCreatedTask =

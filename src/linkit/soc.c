@@ -59,7 +59,7 @@ unsigned freq_init()
 	cmnSerialFlashClkConfTo64M();
 
 	return 192 * 1000000;
-//	return top_xtal_freq_get();
+//      return top_xtal_freq_get();
 }
 
 void soc_idle(int next_expire)
