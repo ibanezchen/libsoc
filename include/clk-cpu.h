@@ -22,64 +22,11 @@
 /*-             http://socware.net                                            */
 /*-                                                                           */
 /*-****************************************************************************/
-#ifndef CLK1605GG
-#define CLK1605GG
+#ifndef DVFS1705DD
+#define DVFS1705DD
 
-#include <hcos/ll.h>
+#include "clk.h"
 
-typedef enum { CLK_EN, CLK_EN_POST, CLK_SETF, CLK_SETF_POST } clk_evt_t;
-
-struct clk;
-
-typedef struct clk clk_t;
-
-typedef struct clk_listener {
-	void (*evt) (struct clk_listener * o, clk_t * clk, clk_evt_t type);
-	lle_t ll;
-	void *priv;
-} clk_listener_t;
-
-struct clk {
-	char *name;
-	clk_t *parent;
-	///< @return 0 on success
-	int (*setf) (clk_t * o, int idx);
-	///< @return 0 on success
-	int (*en) (clk_t * o, int enabled);
-	int (*is_en) (clk_t * o);
-	unsigned (*getf) (clk_t * o);
-	ll_t listeners;
-	void *priv;
-	int idx;
-	unsigned short freq_n;
-	unsigned short *freq;
-};
-
-static inline int clk_setf(clk_t * o, int idx)
-{
-	return o->setf(o, idx);
-}
-
-static inline int clk_en(clk_t * o, int enabled)
-{
-	if (!o->en)
-		return 0;
-	return o->en(o, enabled);
-}
-
-static inline int clk_is_en(clk_t * o)
-{
-	return !o->is_en || o->is_en(o);
-}
-
-static inline unsigned clk_getf(clk_t * o)
-{
-	return o->getf(o);
-}
-
-static inline void clk_listen(clk_t * o, clk_listener_t * listener)
-{
-	ll_addt(&o->listeners, &listener->ll);
-}
+clk_t *clk_cpu_init(int cpu);
 
 #endif
