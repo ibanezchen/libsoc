@@ -22,35 +22,66 @@
 /*-             http://socware.net                                            */
 /*-                                                                           */
 /*-****************************************************************************/
-#ifndef PLT0419
-#define PLT0419
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <stdarg.h>
 
-#include <lwip/netif.h>
+#include <hcos/sem.h>
+
+#include "term.h"
+#include "plt.h"
 #include "heap-mem.h"
-#include "sntp.h"
+#include "uart.h"
+#include "_soc.h"
+#include "plt.h"
 
-/// @return system clock
-unsigned clk_init(void);
+void plt_init(void)
+{
+}
 
-extern heap_t plt_tcm;
+static void _printu(int c, void *_uart)
+{
+	uart_t *u = (uart_t *) _uart;
+	if (c == '\r')
+		return;
+	if (c == '\n')
+		uart_put(u, '\r');
+	uart_put(u, c);
+}
 
-void plt_init(void);
+int _vprintf(const char *fmt, va_list ap)
+{
+	return _print(fmt, ap, _printu, &u0);
+}
 
-void pinmux(unsigned p, unsigned f);
+int main(int argc, char **argv);
 
-typedef void (*net_ipchange_t) (const struct netif * netif);
+int _main(void)
+{
+	char *s, *d, *h;
+	int i, l, argc = 0;
+	char **argv = 0;
 
-void net_init(char *mac_addr, ...);
-
-void ip_static(char *ip, char *msk, char *gw, char *dns);
-
-void ip_dhcp();
-
-void _settime(long ts);
-
-#define plt_sntp(_servers...)		sntp_init(_settime, ##_servers, 0)
-
-#define PRINTF_FLOAT	asm (".global _printf_float")
-#define SCANF_FLOAT	asm (".global _scanf_float")
-
-#endif
+	h = (char *)(BASE_SRAM + SZ_SRAM - 256);
+	if (*(unsigned *)h == 0xBEEFBEEF) {
+		h += 4;
+		argc = 1;
+		for (s = h; *s;) {
+			l = strlen(s);
+			d = core_alloc(l + 1, 0);
+			strcpy(d, s);
+			s += (l + 1);
+			argc++;
+		}
+		argv = (char **)core_alloc(sizeof(char *) * argc, 2);
+		i = 0;
+		argv[i++] = "app";
+		for (s = h; *s; s += strlen(s) + 1)
+			argv[i++] = s;
+		argv[i] = 0;
+	}
+	return main(argc, argv);
+}

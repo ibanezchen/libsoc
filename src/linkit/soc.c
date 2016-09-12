@@ -49,7 +49,7 @@ uart_t u0;
 
 static unsigned freq;
 
-unsigned freq_init()
+unsigned clk_init()
 {
 	top_xtal_init();
 	// Enable MCU clock to 192MHz
@@ -69,7 +69,7 @@ void soc_idle(int next_expire)
 
 void soc_init(void)
 {
-	freq = freq_init();
+	freq = clk_init();
 	uart_init(&u0, BASE_UART0, -1);
 }
 

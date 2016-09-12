@@ -22,35 +22,37 @@
 /*-             http://socware.net                                            */
 /*-                                                                           */
 /*-****************************************************************************/
-#ifndef PLT0419
-#define PLT0419
+#ifndef SOC130408
+#define SOC130408
 
-#include <lwip/netif.h>
-#include "heap-mem.h"
-#include "sntp.h"
+#include "uart.h"
 
-/// @return system clock
-unsigned clk_init(void);
+enum {
+	BASE_TOPCFG = 0x83008000,
+	BASE_UART0 = 0x83030000,
+	BASE_GPT = 0x83050000,
+	BASE_TCM = 0x100000,
+	BASE_SRAM = 0x20000000,
+	BASE_FLASH = 0x10000000,
+	BASE_PINMUX = 0x81023000,
+};
 
-extern heap_t plt_tcm;
+enum {
+	IRQ_TIME = 0xffffffff,
+	IRQ_UART0 = 0,
+	IRQ_GPT = 24,
+};
 
-void plt_init(void);
+static inline unsigned tmr_ticks2ms(unsigned ticks)
+{
+	return ticks * 10;
+}
 
-void pinmux(unsigned p, unsigned f);
+static inline unsigned tmr_ms2ticks(unsigned ms)
+{
+	return ms / 10;
+}
 
-typedef void (*net_ipchange_t) (const struct netif * netif);
-
-void net_init(char *mac_addr, ...);
-
-void ip_static(char *ip, char *msk, char *gw, char *dns);
-
-void ip_dhcp();
-
-void _settime(long ts);
-
-#define plt_sntp(_servers...)		sntp_init(_settime, ##_servers, 0)
-
-#define PRINTF_FLOAT	asm (".global _printf_float")
-#define SCANF_FLOAT	asm (".global _scanf_float")
+extern uart_t u0, u1;
 
 #endif

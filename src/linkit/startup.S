@@ -36,5 +36,3 @@ _start:
 	blx r0
 2:
 	b		2b
-
-
