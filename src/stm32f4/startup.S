@@ -22,42 +22,17 @@
 /*-             http://socware.net                                            */
 /*-                                                                           */
 /*-****************************************************************************/
-#ifndef SOC130408
-#define SOC130408
-
-#include "uart.h"
-
-enum {
-	BASE_TOPCFG = 0x83008000,
-	BASE_UART0 = 0x83030000,
-	BASE_GPT = 0x83050000,
-	BASE_TCM = 0x100000,
-	BASE_SRAM = 0x20000000,
-	BASE_FLASH = 0x10000000,
-	BASE_PINMUX = 0x81023000,
-};
-
-enum {
-	IRQ_TIME = 0xffffffff,
-	IRQ_UART0 = 0,
-	IRQ_GPT = 24,
-};
-
-enum {
-	UART_BAUD = 115200,
-	UART_CLK = 20000000,
-};
-
-static inline unsigned tmr_ticks2ms(unsigned ticks)
-{
-	return ticks * 10;
-}
-
-static inline unsigned tmr_ms2ticks(unsigned ms)
-{
-	return ms / 10;
-}
-
-extern uart_t u0, u1;
-
-#endif
+	.align 2
+	.global  _start
+	.syntax unified
+	.arch armv7-m
+_start:
+	cpsid	i
+	mrs r0, CONTROL
+	ldr sp, = _stack
+	ldr r0,= _init
+	blx r0
+	ldr r0,= _main
+	blx r0
+2:
+	b		2b
