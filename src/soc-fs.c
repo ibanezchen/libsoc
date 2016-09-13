@@ -23,7 +23,7 @@
 /*-                                                                           */
 /*-****************************************************************************/
 
-#include "_soc.h"
+#include "plt.h"
 #include <unistd.h>
 #include <string.h>
 #include <sys/types.h>
@@ -91,16 +91,9 @@ int _write(int fd, const char *buf, int nbytes)
 	switch (fd) {
 	case 0:
 	case 1:
-		uart_w(&u0, buf, nbytes);
-		break;
-
+		return plt_print(buf, nbytes);
 	}
 	return 0;
-}
-
-void uart_putc(char c)
-{
-	uart_put(&u0, c);
 }
 
 int _read(int fd, char *buf, int nbytes)

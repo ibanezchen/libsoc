@@ -36,6 +36,8 @@ extern heap_t plt_tcm;
 
 void plt_init(void);
 
+int plt_print(const char *buf, int nbytes);
+
 void pinmux(unsigned p, unsigned f);
 
 typedef void (*net_ipchange_t) (const struct netif * netif);

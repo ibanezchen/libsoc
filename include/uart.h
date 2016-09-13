@@ -43,7 +43,7 @@ static inline int uart_w(uart_t * o, const char *buf, int n)
 		char c = *buf++;
 		uart_put(o, c);
 	}
-	return 0;
+	return n;
 }
 
 #endif

@@ -90,7 +90,7 @@ void tmr_enable(int on)
 
 irq_handler(rtc_irq)
 {
-	//FIXME: 
+	//FIXME:
 	//reg(BASE_GPT + 0x0) = 0x2;
 	//dbg("rtc= %x\r\n", soc_rtcs());
 	return IRQ_DONE;

@@ -52,6 +52,15 @@ static void _printu(int c, void *_uart)
 	uart_put(u, c);
 }
 
+int plt_print(const char *buf, int n)
+{
+	while (n--) {
+		char c = *buf++;
+		_printu(c, &u0);
+	}
+	return n;
+}
+
 int _vprintf(const char *fmt, va_list ap)
 {
 	return _print(fmt, ap, _printu, &u0);
