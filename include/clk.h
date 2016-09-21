@@ -53,6 +53,7 @@ struct clk {
 	int idx;
 	unsigned short freq_n;
 	unsigned short *freq;
+	unsigned short *pwr;
 };
 
 static inline int clk_setf(clk_t * o, int idx)

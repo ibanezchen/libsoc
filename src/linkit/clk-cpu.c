@@ -42,6 +42,10 @@ static unsigned short freq[] = {
 	12, 20, 40, 60, 80, 96, 120, 160, 196
 };
 
+static unsigned short pwr[] = {
+	5, 26, 313, 530, 724, 878, 1123, 1481, 1794
+};
+
 static int setf(clk_t * o, int idx)
 {
 	lle_t *lle;
@@ -88,7 +92,7 @@ static unsigned getf(clk_t * o)
 
 static clk_t clk_cpu = {
 	"cpu", 0, setf, 0, 0, getf, {0, 0}, priv, 0,
-	sizeof(freq) / sizeof(unsigned short), freq
+	sizeof(freq) / sizeof(unsigned short), freq, pwr
 };
 
 static void stick(struct clk_listener *o, clk_t * clk, clk_evt_t type)
