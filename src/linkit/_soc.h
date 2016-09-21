@@ -55,4 +55,6 @@ static inline unsigned tmr_ms2ticks(unsigned ms)
 
 extern uart_t u0, u1;
 
+extern unsigned linkit_freq;
+
 #endif

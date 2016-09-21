@@ -28,6 +28,7 @@
 #include <hcos/core.h>
 #include <hcos/io.h>
 #include "clk-cpu.h"
+#include "_soc.h"
 #include <string.h>
 
 #define CTR	0x830081B0
@@ -99,6 +100,7 @@ static void stick(struct clk_listener *o, clk_t * clk, clk_evt_t type)
 {
 	if (type == CLK_SETF_POST)
 		cpu_stick_init(clk_getf(clk) / HZ);
+	linkit_freq = clk_getf(clk);
 }
 
 static clk_listener_t clk_listener_systick = { stick, {0, 0}, 0 };

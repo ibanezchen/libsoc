@@ -47,7 +47,7 @@ void cmnSerialFlashClkConfTo64M(void);
 
 uart_t u0;
 
-static unsigned freq;
+unsigned linkit_freq;
 
 unsigned clk_init()
 {
@@ -69,7 +69,7 @@ void soc_idle(int next_expire)
 
 void soc_init(void)
 {
-	freq = clk_init();
+	linkit_freq = clk_init();
 	uart_init(&u0, BASE_UART0, -1);
 }
 
@@ -119,7 +119,7 @@ irq_handler(rtc_irq)
 
 int tmr_init_soc(unsigned *rtcs2tick, unsigned *hz)
 {
-	cpu_stick_init(freq / HZ);
+	cpu_stick_init(linkit_freq / HZ);
 	//set Priority for Systick Interrupt
 	cpu_pri(E_STICK, 5);
 	//enable tickless timer
@@ -142,6 +142,16 @@ int tmr_init_soc(unsigned *rtcs2tick, unsigned *hz)
 unsigned soc_rtcs()
 {
 	return 0xffffffff - readl(BASE_GPT + 0x40);
+}
+
+unsigned soc_hrt_init(void)
+{
+	return linkit_freq;
+}
+
+unsigned soc_hrt(void)
+{
+	return 	((1<<24)-1) - cpu_stick_read();
 }
 
 void tmr_tickless_soc(unsigned next_expire)
