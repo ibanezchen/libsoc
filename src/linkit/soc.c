@@ -70,7 +70,7 @@ void soc_idle(int next_expire)
 void soc_init(void)
 {
 	linkit_freq = clk_init();
-	uart_init(&u0, BASE_UART0, -1);
+	uart_init(&u0, BASE_UART0, IRQ_UART0);
 }
 
 unsigned irq_mask(unsigned irq)

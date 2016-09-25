@@ -26,7 +26,8 @@
 #define UART0721
 
 typedef struct {
-	unsigned base, irq;
+	unsigned base;
+	unsigned short irq, is_int;
 } uart_t;
 
 void uart_init(uart_t * o, unsigned base, unsigned irq);
@@ -36,6 +37,8 @@ void uart_baud(uart_t * o, unsigned clk, unsigned baud);
 void uart_put(uart_t * o, char c);
 
 int uart_get(uart_t * o);
+
+void uart_imode(uart_t * o);
 
 static inline int uart_w(uart_t * o, const char *buf, int n)
 {

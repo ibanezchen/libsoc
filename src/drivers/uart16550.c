@@ -41,7 +41,7 @@ void uart_init(uart_t * o, unsigned base, unsigned irq)
 	o->irq = irq;
 }
 
-void uart_put(uart_t * o, char c)
+static void uart_put_ni(uart_t * o, char c)
 {
 	unsigned base = o->base;
 	while (1) {
@@ -57,7 +57,7 @@ void uart_put(uart_t * o, char c)
 	}
 }
 
-int uart_get(uart_t * o)
+static int uart_get_ni(uart_t * o)
 {
 	unsigned base = o->base;
 	unsigned char lsr;
@@ -66,4 +66,49 @@ int uart_get(uart_t * o)
 	if ((lsr & 0x1) == 0)
 		return -1;
 	return readb(base + 0x00);
+}
+
+// FIXME:
+void uart_put_i(uart_t * o, char c);
+
+static int uart_get_i(uart_t * o);
+
+void uart_put(uart_t * o, char c)
+{
+	if(!o->is_int)
+		uart_put_ni(o, c);
+	else
+		uart_put_ni(o, c);
+}
+
+int uart_get(uart_t * o)
+{
+	return o->is_int? uart_get_i(o): uart_get_ni(o);
+}
+
+///< interrupt mode below
+#include <hcos/irq.h>
+#include <stdio.h>
+
+static irq_handler(uart_irq)
+{
+	printf("interrupt\n");
+	return IRQ_DONE;
+}
+
+// FIXME:
+void uart_put_i(uart_t * o, char c)
+{}
+
+static int uart_get_i(uart_t * o)
+{
+	return -1;
+}
+
+void uart_imode(uart_t * o)
+{
+	o->is_int = 1;
+	writeb(0x07, (void *)UART_FCR(o->base));	// FIFO
+	writeb(readb(UART_IER(o->base)) | 0x01, (void *)UART_IER(o->base));
+	irq_init(o->irq, uart_irq);
 }

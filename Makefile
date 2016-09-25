@@ -23,7 +23,7 @@ CONFIG :=-DHZ=128 -DHC=1 \
 	$(SOC_CFG)
 ASFLAGS:=$(MOPTS) $(CONFIG) -O2 -g -Wall -Werror -D __ASSEMBLY__
 CFLAGS :=$(MOPTS) $(CONFIG) -O2 -g -Wall -Werror
-LSCRIPT?=rom.ld
+LSCRIPT?=ram.ld
 LDFLAGS:=$(MOPTS) -g -nostartfiles -nodefaultlibs -L . -L$(PREFIX)/lib -Tbin/$(SOC)/$(LSCRIPT)
 LDFLAGS+= -Wl,--start-group -lhcos -lc -lgcc $(SOC_LIB) -Wl,--end-group -Wl,--gc-sections
 
