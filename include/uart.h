@@ -25,8 +25,29 @@
 #ifndef UART0721
 #define UART0721
 
+#include <hcos/sem.h>
+
 typedef struct {
-	unsigned base, irq;
+	sem_t sem;
+	unsigned short h, t;
+	int sz;
+	char *b;
+} uart_b_t;
+
+static inline int uartb_full(uart_b_t * buf)
+{
+	return buf->sem.val >= buf->sz;
+}
+
+static inline int uartb_empty(uart_b_t * buf)
+{
+	return !buf->sem.val;
+}
+
+typedef struct {
+	unsigned base;
+	unsigned short irq, is_int;
+	uart_b_t in;
 } uart_t;
 
 void uart_init(uart_t * o, unsigned base, unsigned irq);
@@ -36,6 +57,9 @@ void uart_baud(uart_t * o, unsigned clk, unsigned baud);
 void uart_put(uart_t * o, char c);
 
 int uart_get(uart_t * o);
+
+///< use interrupt on uart input
+void uart_int_in(uart_t * o, char *b, int sz);
 
 static inline int uart_w(uart_t * o, const char *buf, int n)
 {

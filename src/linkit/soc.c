@@ -70,7 +70,7 @@ void soc_idle(int next_expire)
 void soc_init(void)
 {
 	linkit_freq = clk_init();
-	uart_init(&u0, BASE_UART0, -1);
+	uart_init(&u0, BASE_UART0, IRQ_UART0);
 }
 
 unsigned irq_mask(unsigned irq)
@@ -151,7 +151,7 @@ unsigned soc_hrt_init(void)
 
 unsigned soc_hrt(void)
 {
-	return 	((1<<24)-1) - cpu_stick_read();
+	return ((1 << 24) - 1) - cpu_stick_read();
 }
 
 void tmr_tickless_soc(unsigned next_expire)

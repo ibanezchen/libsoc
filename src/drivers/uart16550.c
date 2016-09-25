@@ -24,6 +24,7 @@
 /*-****************************************************************************/
 #include <hcos/io.h>
 #include "uart.h"
+#include <string.h>
 
 #define UART_THR(_b)           ((_b)+0x0)
 #define UART_DLL(_b)           ((_b)+0x0)
@@ -37,11 +38,12 @@
 
 void uart_init(uart_t * o, unsigned base, unsigned irq)
 {
+	memset(o, 0, sizeof(uart_t));
 	o->base = base;
 	o->irq = irq;
 }
 
-void uart_put(uart_t * o, char c)
+static void uart_put_ni(uart_t * o, char c)
 {
 	unsigned base = o->base;
 	while (1) {
@@ -57,7 +59,7 @@ void uart_put(uart_t * o, char c)
 	}
 }
 
-int uart_get(uart_t * o)
+static int uart_get_ni(uart_t * o)
 {
 	unsigned base = o->base;
 	unsigned char lsr;
@@ -66,4 +68,65 @@ int uart_get(uart_t * o)
 	if ((lsr & 0x1) == 0)
 		return -1;
 	return readb(base + 0x00);
+}
+
+static int uart_get_i(uart_t * o);
+
+void uart_put(uart_t * o, char c)
+{
+	uart_put_ni(o, c);
+}
+
+int uart_get(uart_t * o)
+{
+	return o->is_int ? uart_get_i(o) : uart_get_ni(o);
+}
+
+///< interrupt mode below
+#include <hcos/irq.h>
+#include <stdio.h>
+
+static irq_handler(uart_irq)
+{
+	uart_t *o = irq_data();
+	uart_b_t *in = &o->in;
+	int c;
+	while ((c = uart_get_ni(o)) >= 0) {
+		if (!uartb_full(in)) {
+			in->b[in->t++] = c;
+			if (in->t >= in->sz)
+				in->t = 0;
+			sem_post(&in->sem);
+		}
+	}
+	return 0;
+}
+
+static int uart_get_i(uart_t * o)
+{
+	int c = -1;
+	uart_b_t *buf = &o->in;
+	sem_get(&o->in.sem, WAIT);
+	c = buf->b[buf->h++];
+	if (buf->h >= buf->sz)
+		buf->h = 0;
+	return c;
+}
+
+static inline void uartb_init(uart_b_t * buf, char *b, int sz)
+{
+	buf->b = b;
+	buf->sz = sz;
+	buf->h = buf->t = 0;
+	sem_init(&buf->sem, 0);
+}
+
+void uart_int_in(uart_t * o, char *b, int sz)
+{
+	o->is_int = 1;
+	writeb(0x07, (void *)UART_FCR(o->base));	// FIFO
+	writeb(readb(UART_IER(o->base)) | 0x01, (void *)UART_IER(o->base));
+	irq_init(o->irq, uart_irq);
+	uartb_init(&o->in, b, sz);
+	irq_bind(o->irq, o);
 }
