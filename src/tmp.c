@@ -22,83 +22,36 @@
 /*-             http://socware.net                                            */
 /*-                                                                           */
 /*-****************************************************************************/
+#include <hcos/task.h>
+#include <hcos/soc.h>
 #include <hcos/io.h>
+#include <hcos/cpu/nvic.h>
+#include "_soc.h"
 #include "uart.h"
+#include <string.h>
+#include <stdio.h>
+#include "term.h"
 
-#define UART_THR(_b)           ((_b)+0x0)
-#define UART_DLL(_b)           ((_b)+0x0)
-#define UART_DLH(_b)           ((_b)+0x4)
-#define UART_IER(_b)           ((_b)+0x4)
-#define UART_FCR(_b)           ((_b)+0x8)
-#define UART_LCR(_b)           ((_b)+0xc)
-#define UART_LSR(_b)           ((_b)+0x14)
-
-#define UART_LSR_THRE     	    0x0020
-
-void uart_init(uart_t * o, unsigned base, unsigned irq)
+void tmp(void *priv)
 {
-	o->base = base;
-	o->irq = irq;
-}
-
-static void uart_put_ni(uart_t * o, char c)
-{
-	unsigned base = o->base;
-	while (1) {
-		unsigned short lsr;
-		lsr = readb(UART_LSR(base));
-		if (lsr & UART_LSR_THRE) {
-			//FIXME:
-			if (c == '\n')
-				writeb('\r', (void *)UART_THR(base));
-			writeb(c, (void *)UART_THR(base));
-			break;
-		}
+	int i = 0;
+	uart_imode(&u0);
+	while(1){
+		printf("%d\n", i++);
+		task_sleep(tmr_hz);
 	}
 }
 
-static int uart_get_ni(uart_t * o)
+#if _EXE_
+int main(int argc, char **argv)
 {
-	unsigned base = o->base;
-	unsigned char lsr;
-
-	lsr = readb(base + 0x14);
-	if ((lsr & 0x1) == 0)
-		return -1;
-	return readb(base + 0x00);
-}
-
-static int uart_get_i(uart_t * o);
-
-void uart_put(uart_t * o, char c)
-{
-	uart_put_ni(o, c);
-}
-
-int uart_get(uart_t * o)
-{
-	return o->is_int? uart_get_i(o): uart_get_ni(o);
-}
-
-///< interrupt mode below
-#include <hcos/irq.h>
-#include <stdio.h>
-
-static irq_handler(uart_irq)
-{
-	printf("interrupt\n");
+	int i;
+	core_init();
+	for (i = 0; i < argc; i++)
+		printf("argv[%d] = %s\r\n", i, argv[i]);
+	task_new("slow", tmp, 56, 1024, -1, (void *)(HZ * 1));
+	core_start();
 	return 0;
 }
 
-static int uart_get_i(uart_t * o)
-{
-	return -1;
-}
-
-void uart_imode(uart_t * o)
-{
-	o->is_int = 1;
-	writeb(0x07, (void *)UART_FCR(o->base));	// FIFO
-	writeb(readb(UART_IER(o->base)) | 0x01, (void *)UART_IER(o->base));
-	irq_init(o->irq, uart_irq);
-}
+#endif
