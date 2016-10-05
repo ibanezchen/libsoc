@@ -27,7 +27,7 @@
 #include <hcos/dbg.h>
 #include <hcos/core.h>
 #include <hcos/io.h>
-#include "clk-cpu.h"
+#include <hcos/clk-cpu.h>
 #include "_soc.h"
 #include <string.h>
 
