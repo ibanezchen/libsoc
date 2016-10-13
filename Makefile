@@ -30,8 +30,7 @@ LDFLAGS+= -Wl,--start-group -lhcos -lc -lgcc $(SOC_LIB) -Wl,--end-group -Wl,--gc
 MSCRIPT:=$(PREFIX)/share/mod.ld
 LIB    :=lib$(NAME).a
 
-ALL    :=include/soc-mcfg.h \
-	$(PREFIX)/bin/$(SOC) $(SOC_ALL)
+ALL    :=include/soc-mcfg.h $(SOC_ALL) $(PREFIX)/bin/$(SOC)
 CLEAN  :=
 CPU    :=arm
 
