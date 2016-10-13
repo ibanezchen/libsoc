@@ -110,6 +110,7 @@ clk_t *clk_cpu_init(int cpu)
 	if (!clk_cpu.listeners.n) {
 		ll_init(&clk_cpu.listeners);
 		clk_listen(&clk_cpu, &clk_listener_systick);
+		clk_cpu.idx = clk_cpu.freq_n - 1;
 	}
 	return &clk_cpu;
 }
