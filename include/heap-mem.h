@@ -1,27 +1,20 @@
-/*-****************************************************************************/
-/*-                                                                           */
-/*-            Copyright (c) 2013 by SOCware Inc.                             */
-/*-                                                                           */
-/*-  This software is copyrighted by and is the sole property of SOCware, Inc.*/
-/*-  All rights, title, ownership, or other interests in the software remain  */
-/*-  the property of SOCware, Inc. The source code is for FREE short-term     */
-/*-  evaluation, educational or non-commercial research only. Any commercial  */
-/*-  application may only be used in accordance with the corresponding license*/
-/*-  agreement. Any unauthorized use, duplication, transmission, distribution,*/
-/*-  or disclosure of this software is expressly forbidden.                   */
-/*-                                                                           */
-/*-  Knowledge of the source code may NOT be used to develop a similar product*/
-/*-                                                                           */
-/*-  This Copyright notice may not be removed or modified without prior       */
-/*-  written consent of SOCware, Inc.                                         */
-/*-                                                                           */
-/*-  SOCWare, Inc. reserves the right to modify this software                 */
-/*-  without notice.                                                          */
-/*-                                                                           */
-/*-             socware.help@gmail.com                                        */
-/*-             http://socware.net                                            */
-/*-                                                                           */
-/*-****************************************************************************/
+/**
+*	@file heap-mem.h
+*
+*	Copyright 2016 [socware.net]
+*
+*	Licensed under the Apache License, Version 2.0 (the "License");
+*	you may not use this file except in compliance with the License.
+*	You may obtain a copy of the License at
+*
+*	http://www.apache.org/licenses/LICENSE-2.0
+*
+*	Unless required by applicable law or agreed to in writing, software
+*	distributed under the License is distributed on an "AS IS" BASIS,
+*	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*	See the License for the specific language governing permissions and
+*	limitations under the License.
+*/
 #ifndef MALLOC0520
 #define MALLOC0520
 

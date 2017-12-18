@@ -1,5 +1,5 @@
 /**
-*	@file _malloc.c
+*	@file heap-mem.c
 *
 *	Copyright 2016 [socware.net]
 *
